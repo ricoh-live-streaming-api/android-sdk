@@ -36,7 +36,7 @@ client_secret=kxiFVi6lzf14dffq3fg46ghg7dip1ash74ioisudsensJ9fe89f4fjijoiafDVcNmg
 ### 初めての起動
 * ウェアラブルグラスで `RICOH Live Streaming Client App` アプリ起動後、カメラとマイクのパーミッションが要求されるため許可する
 * パーミッション許可後、QRコードの読み込み画面が表示される
-* Androidスマートフォン端末で[setting-app](setting-app)を起動し、アプリ設定のためのQRコードを作成する
+* Androidスマートフォン端末で[setting-app](../setting-app)を起動し、アプリ設定のためのQRコードを作成する
 * QRコードを読み込むとWi-Fiの接続および、アプリケーションで使用するRoomIDが保存される
   * RoomIDを途中で変更するためには、ウェアラブルグラスで `Setting RICOH Live Streaming Client App`を起動する
     * QRコードの読み込み画面が表示されるので、新しいRoomIDを埋め込んだQRコードを読み込むことで変更が可能
