@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">RICOH Live Streaming Client Sample</string>
+    <string name="bidir_activity_name">Bidirectional Sample</string>
+    <string name="recv_activity_name">Receiver Sample</string>
+    <string name="file_sender_activity_name">File Sender Sample</string>
+    <string name="uvc_camera_activity_name">UVC Camera Sample</string>
+    <string name="connect">Connect</string>
+    <string name="connecting">Connecting…</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="disconnecting">Disconnecting…</string>
+    <string name="pick_file">Pick File</string>
+    <string name="guide_save">Some items have not been saved.</string>
+    <string name="save_config">Save</string>
+    <string name="room_id">RoomID</string>
+    <string name="log_level">LogLevel</string>
+    <string name="room_id_is_empty">Room ID is empty.</string>
+    <string name="room_id_has_been_changed">Room ID has been changed. Are you sure to continue without saving?</string>
+    <string name="room_type">RoomType</string>
+    <string name="sfu">SFU</string>
+    <string name="p2p">P2P</string>
+    <string name="p2p_turn">P2P+Turn</string>
+    <string name="update_connection_meta">Update connection meta</string>
+    <string name="update_track_meta">Update track meta</string>
+    <string name="mute_type">MuteType</string>
+    <string name="soft_mute">softmute</string>
+    <string name="hard_mute">hardmute</string>
+    <string name="mic">Mic</string>
+    <string name="video">Video</string>
+    <string name="mute">mute</string>
+    <string name="unmute">unmute</string>
+</resources>
