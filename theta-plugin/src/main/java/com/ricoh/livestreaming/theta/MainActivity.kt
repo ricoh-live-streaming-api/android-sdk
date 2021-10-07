@@ -11,8 +11,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.AdapterView
 import com.ricoh.livestreaming.*
+import com.ricoh.livestreaming.theta.databinding.ActivityMainBinding
 import com.ricoh.livestreaming.webrtc.CodecUtils
 import com.ricoh.livestreaming.webrtc.ThetaCameraCapturer
 import com.theta360.pluginlibrary.activity.PluginActivity
@@ -20,7 +22,6 @@ import com.theta360.pluginlibrary.callback.KeyCallback
 import com.theta360.pluginlibrary.receiver.KeyReceiver
 import com.theta360.pluginlibrary.values.LedColor
 import com.theta360.pluginlibrary.values.LedTarget
-import kotlinx.android.synthetic.main.activity_main.*
 import org.apache.commons.collections4.IteratorUtils
 import org.slf4j.LoggerFactory
 import org.theta4j.webapi.Options.DATE_TIME_ZONE
@@ -75,9 +76,16 @@ class MainActivity : PluginActivity() {
 
     private val thetaPlugin = Theta.createForPlugin()
 
+    /** View Binding */
+    private lateinit var mActivityMainBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        
+        mActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mActivityMainBinding.root)
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         mEgl = EglBase.create()
 
@@ -95,34 +103,34 @@ class MainActivity : PluginActivity() {
         Config.load(this.applicationContext)
 
         // Save button
-        save_config.setOnClickListener {
-            Config.setRoomId(this@MainActivity.applicationContext, room_id.text.toString())
-            layout_guide.visibility = View.INVISIBLE
+        mActivityMainBinding.saveConfig.setOnClickListener {
+            Config.setRoomId(this@MainActivity.applicationContext, mActivityMainBinding.roomId.text.toString())
+            mActivityMainBinding.layoutGuide.visibility = View.INVISIBLE
         }
 
         // Room ID text box
-        room_id.setText(Config.getRoomId())
-        room_id.addTextChangedListener(object : TextWatcher {
+        mActivityMainBinding.roomId.setText(Config.getRoomId())
+        mActivityMainBinding.roomId.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.toString() != Config.getRoomId()) layout_guide.visibility = View.VISIBLE
-                else layout_guide.visibility = View.INVISIBLE
+                if (s.toString() != Config.getRoomId()) mActivityMainBinding.layoutGuide.visibility = View.VISIBLE
+                else mActivityMainBinding.layoutGuide.visibility = View.INVISIBLE
             }
         })
 
         // Log level spinner
-        log_level.setSelection(Config.getSelectedLoggingSeverity())
-        log_level.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        mActivityMainBinding.logLevel.setSelection(Config.getSelectedLoggingSeverity())
+        mActivityMainBinding.logLevel.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                Config.setLoggingSeverity(this@MainActivity.applicationContext, log_level.selectedItem.toString())
+                Config.setLoggingSeverity(this@MainActivity.applicationContext, mActivityMainBinding.logLevel.selectedItem.toString())
             }
         }
 
         // Room Type
-        room_type_radio.check(Config.getSelectedRoomTypeID())
-        room_type_radio.setOnCheckedChangeListener { _, checkedId ->
+        mActivityMainBinding.roomTypeRadio.check(Config.getSelectedRoomTypeID())
+        mActivityMainBinding.roomTypeRadio.setOnCheckedChangeListener { _, checkedId ->
             Config.setRoomType(applicationContext, checkedId)
         }
     }
@@ -180,13 +188,13 @@ class MainActivity : PluginActivity() {
                             disableBFormat()
 
                             val roomSpec = RoomSpec(Config.getRoomType())
-                            val rand = Random();
+                            val rand = Random()
                             val connectionId = "THETA" + rand.nextInt(1000)
                             val dateTimeZone = thetaPlugin.getOption(DATE_TIME_ZONE)
                             val dateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ssZZ")
                             val date = dateFormat.parse(dateTimeZone)
                             val accessToken = JwtAccessToken.createAccessToken(
-                                    BuildConfig.CLIENT_SECRET, room_id.text.toString(), roomSpec, date, connectionId)
+                                    BuildConfig.CLIENT_SECRET, mActivityMainBinding.roomId.text.toString(), roomSpec, date, connectionId)
                             val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
                             mClient = Client(applicationContext, eglContext, mThetaVideoEncoderFactory).apply {
                                 setEventListener(ClientListener())

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.ricoh.livestreaming.wearable_glass.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -20,9 +21,14 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    /** View Binding */
+    private lateinit var mActivityMainBinding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        mActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mActivityMainBinding.root)
     }
 
     override fun onResume() {

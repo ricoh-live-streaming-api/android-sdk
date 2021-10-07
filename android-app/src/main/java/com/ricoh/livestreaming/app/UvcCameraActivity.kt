@@ -12,10 +12,10 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
+import com.ricoh.livestreaming.app.databinding.ActivityUvcCameraBinding
 import com.ricoh.livestreaming.theta.ThetaVideoEncoderFactory
 import com.ricoh.livestreaming.uvc.UvcVideoCapturer
 import com.ricoh.livestreaming.webrtc.CodecUtils
-import kotlinx.android.synthetic.main.activity_uvc_camera.*
 import org.slf4j.LoggerFactory
 import org.webrtc.*
 import java.util.*
@@ -49,27 +49,32 @@ class UvcCameraActivity : AppCompatActivity() {
 
     private var mViewLayoutManager: ViewLayoutManager? = null
 
+    /** View Binding */
+    private lateinit var mActivityUvcCameraBinding: ActivityUvcCameraBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setContentView(R.layout.activity_uvc_camera)
+
+        mActivityUvcCameraBinding = ActivityUvcCameraBinding.inflate(layoutInflater)
+        setContentView(mActivityUvcCameraBinding.root)
 
         supportActionBar!!.hide()
         mEgl = EglBase.create()
-        mViewLayoutManager = ViewLayoutManager(applicationContext, mEgl, view_layout)
+        mViewLayoutManager = ViewLayoutManager(applicationContext, mEgl, mActivityUvcCameraBinding.viewLayout)
 
-        connect_button.setOnClickListener {
+        mActivityUvcCameraBinding.connectButton.setOnClickListener {
             if (mClient == null) {
-                connect_button.text = getString(R.string.connecting)
+                mActivityUvcCameraBinding.connectButton.text = getString(R.string.connecting)
                 connect()
             } else {
-                connect_button.text = getString(R.string.disconnecting)
+                mActivityUvcCameraBinding.connectButton.text = getString(R.string.disconnecting)
                 disconnect()
             }
         }
 
-        roomId.setText(Config.getRoomId())
-        connect_button.isEnabled = false
+        mActivityUvcCameraBinding.roomId.setText(Config.getRoomId())
+        mActivityUvcCameraBinding.connectButton.isEnabled = false
         mVideoCapturer = UvcVideoCapturer(applicationContext)
                 .apply {
                     setEventListener(UvcVideoCapturerListener())
@@ -77,8 +82,8 @@ class UvcCameraActivity : AppCompatActivity() {
 
         // Camera list Spinner
         mAdapter = UvcFormatListAdapter(this)
-        cap_spinner.adapter = mAdapter
-        cap_spinner.isEnabled = true
+        mActivityUvcCameraBinding.capSpinner.adapter = mAdapter
+        mActivityUvcCameraBinding.capSpinner.isEnabled = true
     }
 
     override fun onDestroy() {
@@ -90,11 +95,11 @@ class UvcCameraActivity : AppCompatActivity() {
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (mClient?.state == Client.State.OPEN) {
-            controls_layout.visibility = View.VISIBLE
+            mActivityUvcCameraBinding.controlsLayout.visibility = View.VISIBLE
 
             mHandler.removeCallbacksAndMessages(null)
             mHandler.postDelayed(Runnable {
-                controls_layout.visibility = View.GONE
+                mActivityUvcCameraBinding.controlsLayout.visibility = View.GONE
             }, 3000)
         }
 
@@ -103,13 +108,13 @@ class UvcCameraActivity : AppCompatActivity() {
 
 
     private fun connect() = executor.safeSubmit {
-        var roomId = roomId.text.toString()
+        var roomId = mActivityUvcCameraBinding.roomId.text.toString()
 
         val capWidth: Int
         val capHeight: Int
         val videoBitrate = BuildConfig.VIDEO_BITRATE
 
-        val format = mCameraFormats.get(cap_spinner.selectedItemPosition)
+        val format = mCameraFormats.get(mActivityUvcCameraBinding.capSpinner.selectedItemPosition)
         LOGGER.info("Try to connect. RoomType={} CameraFormat={}", Config.getRoomType(), format)
         mVideoCapturer?.setConfig(format)
 
@@ -194,9 +199,9 @@ class UvcCameraActivity : AppCompatActivity() {
             LOGGER.debug("Client#onConnecting")
 
             runOnUiThread {
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.connecting)
-                cap_spinner.isEnabled = false
+                mActivityUvcCameraBinding.connectButton.isEnabled = false
+                mActivityUvcCameraBinding.connectButton.text = getString(R.string.connecting)
+                mActivityUvcCameraBinding.capSpinner.isEnabled = false
             }
         }
 
@@ -230,10 +235,10 @@ class UvcCameraActivity : AppCompatActivity() {
             }, 0, 1000)
 
             runOnUiThread {
-                connect_button.text = getString(R.string.disconnect)
-                connect_button.isEnabled = true
+                mActivityUvcCameraBinding.connectButton.text = getString(R.string.disconnect)
+                mActivityUvcCameraBinding.connectButton.isEnabled = true
                 mHandler.postDelayed(Runnable {
-                    controls_layout.visibility = View.GONE
+                    mActivityUvcCameraBinding.controlsLayout.visibility = View.GONE
                 }, 3000)
             }
         }
@@ -242,8 +247,8 @@ class UvcCameraActivity : AppCompatActivity() {
             LOGGER.debug("Client#onClosing")
 
             runOnUiThread {
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.disconnecting)
+                mActivityUvcCameraBinding.connectButton.isEnabled = false
+                mActivityUvcCameraBinding.connectButton.text = getString(R.string.disconnecting)
             }
         }
 
@@ -275,11 +280,11 @@ class UvcCameraActivity : AppCompatActivity() {
 
             runOnUiThread {
                 mHandler.removeCallbacksAndMessages(null)
-                controls_layout.visibility = View.VISIBLE
+                mActivityUvcCameraBinding.controlsLayout.visibility = View.VISIBLE
 
-                connect_button.text = getString(R.string.connect)
-                connect_button.isEnabled = true
-                cap_spinner.isEnabled = true
+                mActivityUvcCameraBinding.connectButton.text = getString(R.string.connect)
+                mActivityUvcCameraBinding.connectButton.isEnabled = true
+                mActivityUvcCameraBinding.capSpinner.isEnabled = true
                 mViewLayoutManager!!.clear()
             }
         }
@@ -375,7 +380,7 @@ class UvcCameraActivity : AppCompatActivity() {
                 mAdapter!!.clear()
                 mAdapter!!.addAll(formats)
 
-                connect_button.isEnabled = true
+                mActivityUvcCameraBinding.connectButton.isEnabled = true
             }
         }
 

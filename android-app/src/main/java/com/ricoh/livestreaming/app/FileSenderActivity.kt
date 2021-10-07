@@ -10,8 +10,8 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
+import com.ricoh.livestreaming.app.databinding.ActivityFileSenderBinding
 import com.ricoh.livestreaming.webrtc.CompressedFileVideoCapturer
-import kotlinx.android.synthetic.main.activity_file_sender.*
 import org.slf4j.LoggerFactory
 import org.webrtc.*
 import java.util.*
@@ -41,35 +41,40 @@ class FileSenderActivity : AppCompatActivity() {
 
     private var mStatsTimer: Timer? = null
 
+    /** View Binding */
+    private lateinit var mActivityFileSenderBinding: ActivityFileSenderBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_file_sender)
+
+        mActivityFileSenderBinding = ActivityFileSenderBinding.inflate(layoutInflater)
+        setContentView(mActivityFileSenderBinding.root)
 
         mEgl = EglBase.create()
         val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
 
-        local_view.init(eglContext, null)
+        mActivityFileSenderBinding.localView.init(eglContext, null)
 
-        pick_button.setOnClickListener {
-            pick_button.isEnabled = false
+        mActivityFileSenderBinding.pickButton.setOnClickListener {
+            mActivityFileSenderBinding.pickButton.isEnabled = false
             startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "video/*"
             }, READ_REQUEST_CODE)
         }
 
-        connect_button.setOnClickListener {
-            connect_button.isEnabled = false
+        mActivityFileSenderBinding.connectButton.setOnClickListener {
+            mActivityFileSenderBinding.connectButton.isEnabled = false
             if (mClient == null) {
-                connect_button.text = getString(R.string.connecting)
+                mActivityFileSenderBinding.connectButton.text = getString(R.string.connecting)
                 connect()
             } else {
-                connect_button.text = getString(R.string.disconnecting)
+                mActivityFileSenderBinding.connectButton.text = getString(R.string.disconnecting)
                 disconnect()
             }
         }
 
-        roomId.setText(Config.getRoomId())
+        mActivityFileSenderBinding.roomId.setText(Config.getRoomId())
     }
 
     override fun onDestroy() {
@@ -85,14 +90,14 @@ class FileSenderActivity : AppCompatActivity() {
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.data.also { uri ->
                 mVideoFileUri = uri
-                video_file_path.text = uri.toString()
-                connect_button.isEnabled = true
+                mActivityFileSenderBinding.videoFilePath.text = uri.toString()
+                mActivityFileSenderBinding.connectButton.isEnabled = true
             }
         }
     }
 
     private fun connect() = executor.safeSubmit {
-        var roomId = roomId.text.toString()
+        var roomId = mActivityFileSenderBinding.roomId.text.toString()
 
         mCapturer = CompressedFileVideoCapturer(applicationContext, mVideoFileUri!!)
         val roomSpec = RoomSpec(Config.getRoomType())
@@ -149,9 +154,9 @@ class FileSenderActivity : AppCompatActivity() {
             LOGGER.debug("Client#onConnecting")
 
             runOnUiThread {
-                pick_button.isEnabled = false
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.connecting)
+                mActivityFileSenderBinding.pickButton.isEnabled = false
+                mActivityFileSenderBinding.connectButton.isEnabled = false
+                mActivityFileSenderBinding.connectButton.text = getString(R.string.connecting)
             }
         }
 
@@ -178,8 +183,8 @@ class FileSenderActivity : AppCompatActivity() {
             }, 0, 1000)
 
             runOnUiThread {
-                connect_button.text = getString(R.string.disconnect)
-                connect_button.isEnabled = true
+                mActivityFileSenderBinding.connectButton.text = getString(R.string.disconnect)
+                mActivityFileSenderBinding.connectButton.isEnabled = true
             }
         }
 
@@ -187,8 +192,8 @@ class FileSenderActivity : AppCompatActivity() {
             LOGGER.debug("Client#onClosing")
 
             runOnUiThread {
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.disconnecting)
+                mActivityFileSenderBinding.connectButton.isEnabled = false
+                mActivityFileSenderBinding.connectButton.text = getString(R.string.disconnecting)
             }
         }
 
@@ -210,9 +215,9 @@ class FileSenderActivity : AppCompatActivity() {
             }
 
             runOnUiThread {
-                pick_button.isEnabled = true
-                connect_button.text = getString(R.string.connect)
-                connect_button.isEnabled = true
+                mActivityFileSenderBinding.pickButton.isEnabled = true
+                mActivityFileSenderBinding.connectButton.text = getString(R.string.connect)
+                mActivityFileSenderBinding.connectButton.isEnabled = true
             }
         }
 
@@ -239,7 +244,7 @@ class FileSenderActivity : AppCompatActivity() {
         override fun onAddLocalTrack(track: MediaStreamTrack, stream: MediaStream) {
             LOGGER.debug("Client#onAddLocalTrack({})", track.id())
             if (track is VideoTrack) {
-                track.addSink(local_view)
+                track.addSink(mActivityFileSenderBinding.localView)
             }
         }
 

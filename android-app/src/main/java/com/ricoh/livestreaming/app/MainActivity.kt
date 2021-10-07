@@ -15,7 +15,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import com.ricoh.livestreaming.app.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -26,24 +26,29 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
+    
+    /** View Binding */
+    private lateinit var mActivityMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        
+        mActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mActivityMainBinding.root)
 
-        start_bidir_activity.setOnClickListener {
+        mActivityMainBinding.startBidirActivity.setOnClickListener {
             this.startChildActivity(BidirActivity::class.java)
         }
 
-        start_recv_activity.setOnClickListener {
+        mActivityMainBinding.startRecvActivity.setOnClickListener {
             this.startChildActivity(RecvActivity::class.java)
         }
 
-        start_file_sender_activity.setOnClickListener {
+        mActivityMainBinding.startFileSenderActivity.setOnClickListener {
             this.startChildActivity(FileSenderActivity::class.java)
         }
 
-        start_uvc_camera_activity.setOnClickListener {
+        mActivityMainBinding.startUvcCameraActivity.setOnClickListener {
             this.startChildActivity(UvcCameraActivity::class.java)
         }
 
@@ -51,34 +56,34 @@ class MainActivity : AppCompatActivity() {
         Config.load(this.applicationContext)
 
         // Save button
-        save_config.setOnClickListener {
-            Config.setRoomId(this@MainActivity.applicationContext, room_id.text.toString())
-            layout_guide.visibility = View.INVISIBLE
+        mActivityMainBinding.saveConfig.setOnClickListener {
+            Config.setRoomId(this@MainActivity.applicationContext, mActivityMainBinding.roomId.text.toString())
+            mActivityMainBinding.layoutGuide.visibility = View.INVISIBLE
         }
 
         // Room ID text box
-        room_id.setText(Config.getRoomId())
-        room_id.addTextChangedListener(object : TextWatcher {
+        mActivityMainBinding.roomId.setText(Config.getRoomId())
+        mActivityMainBinding.roomId.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.toString() != Config.getRoomId()) layout_guide.visibility = View.VISIBLE
-                else layout_guide.visibility = View.INVISIBLE
+                if (s.toString() != Config.getRoomId()) mActivityMainBinding.layoutGuide.visibility = View.VISIBLE
+                else mActivityMainBinding.layoutGuide.visibility = View.INVISIBLE
             }
         })
 
         // Log level spinner
-        log_level.setSelection(Config.getSelectedLoggingSeverity())
-        log_level.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        mActivityMainBinding.logLevel.setSelection(Config.getSelectedLoggingSeverity())
+        mActivityMainBinding.logLevel.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                Config.setLoggingSeverity(this@MainActivity.applicationContext, log_level.selectedItem.toString())
+                Config.setLoggingSeverity(this@MainActivity.applicationContext, mActivityMainBinding.logLevel.selectedItem.toString())
             }
         }
 
         // Room Type
-        room_type_radio.check(Config.getSelectedRoomTypeID())
-        room_type_radio.setOnCheckedChangeListener { _, checkedId ->
+        mActivityMainBinding.roomTypeRadio.check(Config.getSelectedRoomTypeID())
+        mActivityMainBinding.roomTypeRadio.setOnCheckedChangeListener { _, checkedId ->
             Config.setRoomType(applicationContext, checkedId)
         }
     }
@@ -103,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startChildActivity(cls: Class<*>) {
-        val currentRoomId = room_id.text.toString()
+        val currentRoomId = mActivityMainBinding.roomId.text.toString()
         when {
             // Room ID has been changed.
             currentRoomId != Config.getRoomId() -> {

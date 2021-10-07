@@ -3,7 +3,7 @@ package com.ricoh.livestreaming.app
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
-import kotlinx.android.synthetic.main.activity_recv.*
+import com.ricoh.livestreaming.app.databinding.ActivityRecvBinding
 import org.slf4j.LoggerFactory
 import org.webrtc.*
 import java.util.*
@@ -27,16 +27,21 @@ class RecvActivity : AppCompatActivity() {
 
     private var mStatsTimer: Timer? = null
 
+    /** View Binding */
+    private lateinit var mActivityRecvBinding: ActivityRecvBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_recv)
+        
+        mActivityRecvBinding = ActivityRecvBinding.inflate(layoutInflater)
+        setContentView(mActivityRecvBinding.root)
 
         mEgl = EglBase.create()
         val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
 
-        remote_view.init(eglContext, null)
+        mActivityRecvBinding.remoteView.init(eglContext, null)
 
-        connect_button.setOnClickListener {
+        mActivityRecvBinding.connectButton.setOnClickListener {
             if (mClient == null) {
                 connect()
             } else {
@@ -44,7 +49,7 @@ class RecvActivity : AppCompatActivity() {
             }
         }
 
-        roomId.setText(Config.getRoomId())
+        mActivityRecvBinding.roomId.setText(Config.getRoomId())
     }
 
     override fun onDestroy() {
@@ -55,7 +60,7 @@ class RecvActivity : AppCompatActivity() {
     }
 
     private fun connect() = executor.safeSubmit {
-        var roomId = roomId.text.toString()
+        var roomId = mActivityRecvBinding.roomId.text.toString()
 
         val roomSpec = RoomSpec(Config.getRoomType())
         val accessToken = JwtAccessToken.createAccessToken(BuildConfig.CLIENT_SECRET, roomId, roomSpec)
@@ -112,8 +117,8 @@ class RecvActivity : AppCompatActivity() {
             LOGGER.debug("Client#onConnecting")
 
             runOnUiThread {
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.connecting)
+                mActivityRecvBinding.connectButton.isEnabled = false
+                mActivityRecvBinding.connectButton.text = getString(R.string.connecting)
             }
         }
 
@@ -146,8 +151,8 @@ class RecvActivity : AppCompatActivity() {
             }, 0, 1000)
 
             runOnUiThread {
-                connect_button.text = getString(R.string.disconnect)
-                connect_button.isEnabled = true
+                mActivityRecvBinding.connectButton.text = getString(R.string.disconnect)
+                mActivityRecvBinding.connectButton.isEnabled = true
             }
         }
 
@@ -155,8 +160,8 @@ class RecvActivity : AppCompatActivity() {
             LOGGER.debug("Client#onClosing")
 
             runOnUiThread {
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.disconnecting)
+                mActivityRecvBinding.connectButton.isEnabled = false
+                mActivityRecvBinding.connectButton.text = getString(R.string.disconnecting)
             }
         }
 
@@ -179,8 +184,8 @@ class RecvActivity : AppCompatActivity() {
             }
 
             runOnUiThread {
-                connect_button.text = getString(R.string.connect)
-                connect_button.isEnabled = true
+                mActivityRecvBinding.connectButton.text = getString(R.string.connect)
+                mActivityRecvBinding.connectButton.isEnabled = true
             }
         }
 
@@ -216,7 +221,7 @@ class RecvActivity : AppCompatActivity() {
             }
 
             if (track is VideoTrack) {
-                track.addSink(remote_view)
+                track.addSink(mActivityRecvBinding.remoteView)
             }
         }
 

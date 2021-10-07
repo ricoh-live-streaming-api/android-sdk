@@ -3,22 +3,20 @@
  */
 
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.konan.properties.hasProperty
 import java.util.*
 
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("android.extensions")
 }
 
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(30)
     defaultConfig {
         applicationId = "com.ricoh.livestreaming.theta"
         minSdkVersion(25)
-        targetSdkVersion(29)
+        targetSdkVersion(30)
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -40,8 +38,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    (kotlinOptions as KotlinJvmOptions).apply {
+    kotlinOptions.apply {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     flavorDimensions("type")
@@ -54,7 +56,7 @@ android {
 
     variantFilter {
         if (name.contains("unity")) {
-            setIgnore(true)
+            ignore = true
         }
     }
 }
@@ -62,9 +64,9 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "../libs", "include" to listOf("*.aar"))))
     implementation(kotlin("stdlib-jdk8", KotlinCompilerVersion.VERSION))
-    implementation("androidx.appcompat:appcompat:1.1.0")
-    implementation("androidx.constraintlayout:constraintlayout:1.1.3")
-    implementation("org.slf4j:slf4j-api:1.7.28")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("com.github.tony19:logback-android:1.3.0-3")
     implementation("com.theta360:pluginlibrary:2.1.0")
     implementation("org.apache.commons:commons-collections4:4.4")
@@ -75,9 +77,9 @@ dependencies {
         exclude("org.json", "json")     // provided by Android natively
     }
     testImplementation("junit:junit:4.12")
-    androidTestImplementation("androidx.test:runner:1.2.0")
-    androidTestImplementation("androidx.test.ext:junit:1.1.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0")
+    androidTestImplementation("androidx.test:runner:1.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.2")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
     implementation("com.squareup.okhttp3", "okhttp", "3.11.0")
     implementation("com.google.code.gson", "gson", "2.8.5")
 }

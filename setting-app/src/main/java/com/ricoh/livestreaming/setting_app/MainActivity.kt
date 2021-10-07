@@ -15,7 +15,7 @@ import android.view.View.VISIBLE
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
-import kotlinx.android.synthetic.main.activity_main.*
+import com.ricoh.livestreaming.setting_app.databinding.ActivityMainBinding
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), TextWatcher {
@@ -34,22 +34,27 @@ class MainActivity : AppCompatActivity(), TextWatcher {
         const val BITRATE_DEFAULT_VALUE = "7000"    // 7Mbps
         const val RESOLUTION_DEFAULT_VALUE = RESOLUTION_4K
     }
+    
+    /** View Binding */
+    private lateinit var mActivityMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        
+        mActivityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mActivityMainBinding.root)
 
-        ssid_edit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(SSID_KEY))
-        password_edit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(PASSWORD_KEY))
-        room_id_edit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(ROOM_ID_KEY))
-        bitrate_edit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(BITRATE_KEY, BITRATE_DEFAULT_VALUE))
-        ssid_edit.addTextChangedListener(this)
-        password_edit.addTextChangedListener(this)
-        room_id_edit.addTextChangedListener(this)
-        bitrate_edit.addTextChangedListener(this)
+        mActivityMainBinding.ssidEdit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(SSID_KEY))
+        mActivityMainBinding.passwordEdit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(PASSWORD_KEY))
+        mActivityMainBinding.roomIdEdit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(ROOM_ID_KEY))
+        mActivityMainBinding.bitrateEdit.text = Editable.Factory.getInstance().newEditable(getSavedStringData(BITRATE_KEY, BITRATE_DEFAULT_VALUE))
+        mActivityMainBinding.ssidEdit.addTextChangedListener(this)
+        mActivityMainBinding.passwordEdit.addTextChangedListener(this)
+        mActivityMainBinding.roomIdEdit.addTextChangedListener(this)
+        mActivityMainBinding.bitrateEdit.addTextChangedListener(this)
 
-        security_spinner.setSelection(getSavedIntData(SECURITY_KEY))
-        security_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        mActivityMainBinding.securitySpinner.setSelection(getSavedIntData(SECURITY_KEY))
+        mActivityMainBinding.securitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
 
@@ -60,67 +65,67 @@ class MainActivity : AppCompatActivity(), TextWatcher {
                     id: Long
             ) {
                 if (position == 0) {
-                    password_layout.visibility = GONE
+                    mActivityMainBinding.passwordLayout.visibility = GONE
                 } else {
-                    password_layout.visibility = VISIBLE
+                    mActivityMainBinding.passwordLayout.visibility = VISIBLE
                 }
-                create_button.isEnabled = isButtonEnabled()
+                mActivityMainBinding.createButton.isEnabled = isButtonEnabled()
             }
         }
 
-        create_button.setOnClickListener {
-            saveData(SSID_KEY, ssid_edit.text.toString())
-            saveData(PASSWORD_KEY, password_edit.text.toString())
-            saveData(SECURITY_KEY, security_spinner.selectedItemId.toInt())
-            saveData(ROOM_ID_KEY, room_id_edit.text.toString())
-            val resolution = if (send_resolution_group.checkedRadioButtonId == R.id.send_2k_radio) {
+        mActivityMainBinding.createButton.setOnClickListener {
+            saveData(SSID_KEY, mActivityMainBinding.ssidEdit.text.toString())
+            saveData(PASSWORD_KEY, mActivityMainBinding.passwordEdit.text.toString())
+            saveData(SECURITY_KEY, mActivityMainBinding.securitySpinner.selectedItemId.toInt())
+            saveData(ROOM_ID_KEY, mActivityMainBinding.roomIdEdit.text.toString())
+            val resolution = if (mActivityMainBinding.sendResolutionGroup.checkedRadioButtonId == R.id.send_2k_radio) {
                 RESOLUTION_2K
             } else {
                 RESOLUTION_4K
             }
             saveData(SEND_RESOLUTION_KEY, resolution)
-            saveData(BITRATE_KEY, bitrate_edit.text.toString())
+            saveData(BITRATE_KEY, mActivityMainBinding.bitrateEdit.text.toString())
 
             val json = JSONObject().apply {
-                put(SSID_KEY, ssid_edit.text.toString())
-                put(PASSWORD_KEY, password_edit.text.toString())
-                put(SECURITY_KEY, security_spinner.selectedItemId.toInt())
-                put(ROOM_ID_KEY, room_id_edit.text.toString())
+                put(SSID_KEY, mActivityMainBinding.ssidEdit.text.toString())
+                put(PASSWORD_KEY, mActivityMainBinding.passwordEdit.text.toString())
+                put(SECURITY_KEY, mActivityMainBinding.securitySpinner.selectedItemId.toInt())
+                put(ROOM_ID_KEY, mActivityMainBinding.roomIdEdit.text.toString())
                 put(SEND_RESOLUTION_KEY, resolution)
-                put(BITRATE_KEY, Integer.parseInt(bitrate_edit.text.toString()))
+                put(BITRATE_KEY, Integer.parseInt(mActivityMainBinding.bitrateEdit.text.toString()))
             }
             val intent = Intent(applicationContext, QRCodeActivity::class.java)
             intent.putExtra(INTENT_PARAM, json.toString())
             startActivity(intent)
         }
 
-        show_password.setOnCheckedChangeListener { button, isChecked ->
-            val pos = password_edit.selectionEnd
+        mActivityMainBinding.showPassword.setOnCheckedChangeListener { button, isChecked ->
+            val pos = mActivityMainBinding.passwordEdit.selectionEnd
             if (isChecked) {
-                password_edit.inputType = InputType.TYPE_CLASS_TEXT +
+                mActivityMainBinding.passwordEdit.inputType = InputType.TYPE_CLASS_TEXT +
                         InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             } else {
-                password_edit.inputType = InputType.TYPE_CLASS_TEXT +
+                mActivityMainBinding.passwordEdit.inputType = InputType.TYPE_CLASS_TEXT +
                         InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
             if (pos > 0) {
-                password_edit.setSelection(pos)
+                mActivityMainBinding.passwordEdit.setSelection(pos)
             }
         }
 
         when (getSavedIntData(SEND_RESOLUTION_KEY, RESOLUTION_DEFAULT_VALUE)) {
             RESOLUTION_4K -> {
-                send_resolution_group.check(R.id.send_4k_radio)
+                mActivityMainBinding.sendResolutionGroup.check(R.id.send_4k_radio)
             }
             RESOLUTION_2K -> {
-                send_resolution_group.check(R.id.send_2k_radio)
+                mActivityMainBinding.sendResolutionGroup.check(R.id.send_2k_radio)
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        create_button.isEnabled = isButtonEnabled()
+        mActivityMainBinding.createButton.isEnabled = isButtonEnabled()
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -133,16 +138,16 @@ class MainActivity : AppCompatActivity(), TextWatcher {
 
     override fun afterTextChanged(s: Editable?) {
         Log.d("MainActivity", "afterTextChanged")
-        create_button.isEnabled = isButtonEnabled()
+        mActivityMainBinding.createButton.isEnabled = isButtonEnabled()
     }
 
 
     private fun isButtonEnabled(): Boolean {
-        if (ssid_edit.text.isEmpty() || room_id_edit.text.isEmpty() || bitrate_edit.text.isEmpty()) {
+        if (mActivityMainBinding.ssidEdit.text.isEmpty() || mActivityMainBinding.roomIdEdit.text.isEmpty() || mActivityMainBinding.bitrateEdit.text.isEmpty()) {
             return false
         }
 
-        if (security_spinner.selectedItemId != 0L && password_edit.text.isEmpty()) {
+        if (mActivityMainBinding.securitySpinner.selectedItemId != 0L && mActivityMainBinding.passwordEdit.text.isEmpty()) {
             return false
         }
 

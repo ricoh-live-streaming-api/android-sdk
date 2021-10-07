@@ -13,10 +13,10 @@ import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
 import com.ricoh.livestreaming.app.AppAudioManager.AudioManagerEvents
+import com.ricoh.livestreaming.app.databinding.ActivityBidirBinding
 import com.ricoh.livestreaming.theta.ThetaVideoEncoderFactory
 import com.ricoh.livestreaming.webrtc.Camera2VideoCapturer
 import com.ricoh.livestreaming.webrtc.CodecUtils
-import kotlinx.android.synthetic.main.activity_bidir.*
 import org.slf4j.LoggerFactory
 import org.webrtc.*
 import java.util.*
@@ -51,26 +51,31 @@ class BidirActivity : AppCompatActivity() {
     private var mAudioListAdapter: AudioListAdapter? = null
 
     private var mViewLayoutManager: ViewLayoutManager? = null
+    
+    /** View Binding */
+    private lateinit var mActivityBidirBinding: ActivityBidirBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bidir)
+        
+        mActivityBidirBinding = ActivityBidirBinding.inflate(layoutInflater)
+        setContentView(mActivityBidirBinding.root)
 
         supportActionBar!!.hide()
         mEgl = EglBase.create()
-        mViewLayoutManager = ViewLayoutManager(applicationContext, mEgl, view_layout)
+        mViewLayoutManager = ViewLayoutManager(applicationContext, mEgl, mActivityBidirBinding.viewLayout)
 
-        connect_button.setOnClickListener {
+        mActivityBidirBinding.connectButton.setOnClickListener {
             if (mClient == null) {
-                connect_button.text = getString(R.string.connecting)
+                mActivityBidirBinding.connectButton.text = getString(R.string.connecting)
                 connect()
             } else {
-                connect_button.text = getString(R.string.disconnecting)
+                mActivityBidirBinding.connectButton.text = getString(R.string.disconnecting)
                 disconnect()
             }
         }
 
-        update_connection_meta_button.setOnClickListener {
+        mActivityBidirBinding.updateConnectionMetaButton.setOnClickListener {
             try {
                 mClient?.updateMeta(mapOf("connect_meta" to "new_connection_metadata"))
             } catch (e: SDKError) {
@@ -78,7 +83,7 @@ class BidirActivity : AppCompatActivity() {
             }
         }
 
-        update_track_meta_button.setOnClickListener {
+        mActivityBidirBinding.updateTrackMetaButton.setOnClickListener {
             if (localLSTracks.size > 0) {
                 try {
                     mClient?.updateTrackMeta(localLSTracks[0], mapOf("track_metadata" to "new_track_metadata"))
@@ -88,18 +93,18 @@ class BidirActivity : AppCompatActivity() {
             }
         }
 
-        roomId.setText(Config.getRoomId())
+        mActivityBidirBinding.roomId.setText(Config.getRoomId())
 
         // Camera list Spinner
-        camera_list_spinner.adapter = CameraListAdapter(this)
-        camera_list_spinner.isEnabled = true
-        camera_list_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        mActivityBidirBinding.cameraListSpinner.adapter = CameraListAdapter(this)
+        mActivityBidirBinding.cameraListSpinner.isEnabled = true
+        mActivityBidirBinding.cameraListSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // nothing to do.
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val cameraInfo: CameraInfo = camera_list_spinner.selectedItem as CameraInfo
+                val cameraInfo: CameraInfo = mActivityBidirBinding.cameraListSpinner.selectedItem as CameraInfo
                 LOGGER.info("onItemSelected: ${cameraInfo.getName()}")
 
                 if (mClient?.state == Client.State.OPEN) {
@@ -114,7 +119,7 @@ class BidirActivity : AppCompatActivity() {
 
                     var capWidth: Int
                     var capHeight: Int
-                    if ((cap_spinner.getSelectedItem()) == "4K") {
+                    if ((mActivityBidirBinding.capSpinner.getSelectedItem()) == "4K") {
                         capWidth = 3840
                         capHeight = 2160
                     } else {
@@ -147,15 +152,15 @@ class BidirActivity : AppCompatActivity() {
                 mAudioListAdapter!!.addAll(availableAudioDevices)
             }
         })
-        audio_list_spinner.adapter = mAudioListAdapter
-        audio_list_spinner.isEnabled = true
-        audio_list_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        mActivityBidirBinding.audioListSpinner.adapter = mAudioListAdapter
+        mActivityBidirBinding.audioListSpinner.isEnabled = true
+        mActivityBidirBinding.audioListSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // nothing to do.
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val audioDevice = audio_list_spinner.selectedItem as AppAudioManager.AudioDevice
+                val audioDevice = mActivityBidirBinding.audioListSpinner.selectedItem as AppAudioManager.AudioDevice
                 LOGGER.info("onItemSelected: ${audioDevice.deviceName}")
 
                 mAppAudioManager!!.selectAudioDevice(audioDevice)
@@ -180,7 +185,7 @@ class BidirActivity : AppCompatActivity() {
         }
 
         // mic mute
-        mic_mute_radio.setOnCheckedChangeListener { _, checkedId ->
+        mActivityBidirBinding.micMuteRadio.setOnCheckedChangeListener { _, checkedId ->
             if (mClient?.state == Client.State.OPEN) {
                 val muteType = when (checkedId) {
                     R.id.mic_unmute -> {
@@ -207,7 +212,7 @@ class BidirActivity : AppCompatActivity() {
         }
 
         // video mute
-        video_mute_radio.setOnCheckedChangeListener { _, checkedId ->
+        mActivityBidirBinding.videoMuteRadio.setOnCheckedChangeListener { _, checkedId ->
             if (mClient?.state == Client.State.OPEN) {
                 val muteType = when (checkedId) {
                     R.id.video_unmute -> {
@@ -246,14 +251,14 @@ class BidirActivity : AppCompatActivity() {
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (mClient?.state == Client.State.OPEN) {
             if (Config.getRoomType() == RoomSpec.RoomType.SFU) {
-                update_meta_layout.visibility = View.VISIBLE
+                mActivityBidirBinding.updateMetaLayout.visibility = View.VISIBLE
             }
-            controls_layout.visibility = View.VISIBLE
+            mActivityBidirBinding.controlsLayout.visibility = View.VISIBLE
 
             mHandler.removeCallbacksAndMessages(null)
             mHandler.postDelayed(Runnable {
-                update_meta_layout.visibility = View.GONE
-                controls_layout.visibility = View.GONE
+                mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
+                mActivityBidirBinding.controlsLayout.visibility = View.GONE
             }, 3000)
         }
 
@@ -262,13 +267,13 @@ class BidirActivity : AppCompatActivity() {
 
 
     private fun connect() = executor.safeSubmit {
-        var roomId = roomId.text.toString()
+        var roomId = mActivityBidirBinding.roomId.text.toString()
 
         var capWidth = 0
         var capHeight = 0
         var videoBitrate = BuildConfig.VIDEO_BITRATE
 
-        if ((cap_spinner.getSelectedItem()) == "4K") {
+        if ((mActivityBidirBinding.capSpinner.getSelectedItem()) == "4K") {
             capWidth = 3840
             capHeight = 2160
         } else {
@@ -278,7 +283,7 @@ class BidirActivity : AppCompatActivity() {
         }
 
         LOGGER.info("Try to connect. RoomType={}", Config.getRoomType())
-        val cameraInfo: CameraInfo = camera_list_spinner.selectedItem as CameraInfo
+        val cameraInfo: CameraInfo = mActivityBidirBinding.cameraListSpinner.selectedItem as CameraInfo
         mVideoCapturer = Camera2VideoCapturer(applicationContext, cameraInfo.cameraId, capWidth, capHeight, 30)
 
         val roomSpec = RoomSpec(Config.getRoomType())
@@ -308,7 +313,7 @@ class BidirActivity : AppCompatActivity() {
         val stream = mClient!!.getUserMedia(constraints)
         localLSTracks.clear()
         for (track in stream.audioTracks) {
-            val muteType = when (mic_mute_radio.checkedRadioButtonId) {
+            val muteType = when (mActivityBidirBinding.micMuteRadio.checkedRadioButtonId) {
                 R.id.mic_unmute -> {
                     MuteType.UNMUTE
                 }
@@ -327,7 +332,7 @@ class BidirActivity : AppCompatActivity() {
             localLSTracks.add(LSTrack(track, stream, trackOption))
         }
         for (track in stream.videoTracks) {
-            val muteType = when (video_mute_radio.checkedRadioButtonId) {
+            val muteType = when (mActivityBidirBinding.videoMuteRadio.checkedRadioButtonId) {
                 R.id.video_unmute -> {
                     MuteType.UNMUTE
                 }
@@ -388,10 +393,10 @@ class BidirActivity : AppCompatActivity() {
             LOGGER.debug("Client#onConnecting")
 
             runOnUiThread {
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.connecting)
-                camera_list_spinner.isEnabled = false
-                audio_list_spinner.isEnabled = false
+                mActivityBidirBinding.connectButton.isEnabled = false
+                mActivityBidirBinding.connectButton.text = getString(R.string.connecting)
+                mActivityBidirBinding.cameraListSpinner.isEnabled = false
+                mActivityBidirBinding.audioListSpinner.isEnabled = false
             }
         }
 
@@ -425,11 +430,11 @@ class BidirActivity : AppCompatActivity() {
             }, 0, 1000)
 
             runOnUiThread {
-                connect_button.text = getString(R.string.disconnect)
-                connect_button.isEnabled = true
+                mActivityBidirBinding.connectButton.text = getString(R.string.disconnect)
+                mActivityBidirBinding.connectButton.isEnabled = true
                 mHandler.postDelayed(Runnable {
-                    update_meta_layout.visibility = View.GONE
-                    controls_layout.visibility = View.GONE
+                    mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
+                    mActivityBidirBinding.controlsLayout.visibility = View.GONE
                 }, 3000)
             }
         }
@@ -439,12 +444,12 @@ class BidirActivity : AppCompatActivity() {
 
             runOnUiThread {
                 mHandler.removeCallbacksAndMessages(null)
-                update_meta_layout.visibility = View.GONE
-                controls_layout.visibility = View.VISIBLE
-                connect_button.isEnabled = false
-                connect_button.text = getString(R.string.disconnecting)
-                camera_list_spinner.isEnabled = false
-                audio_list_spinner.isEnabled = false
+                mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
+                mActivityBidirBinding.controlsLayout.visibility = View.VISIBLE
+                mActivityBidirBinding.connectButton.isEnabled = false
+                mActivityBidirBinding.connectButton.text = getString(R.string.disconnecting)
+                mActivityBidirBinding.cameraListSpinner.isEnabled = false
+                mActivityBidirBinding.audioListSpinner.isEnabled = false
             }
         }
 
@@ -470,10 +475,10 @@ class BidirActivity : AppCompatActivity() {
             }
 
             runOnUiThread {
-                connect_button.text = getString(R.string.connect)
-                connect_button.isEnabled = true
-                camera_list_spinner.isEnabled = true
-                audio_list_spinner.isEnabled = true
+                mActivityBidirBinding.connectButton.text = getString(R.string.connect)
+                mActivityBidirBinding.connectButton.isEnabled = true
+                mActivityBidirBinding.cameraListSpinner.isEnabled = true
+                mActivityBidirBinding.audioListSpinner.isEnabled = true
                 mViewLayoutManager!!.clear()
             }
         }
@@ -496,8 +501,8 @@ class BidirActivity : AppCompatActivity() {
             }
 
             runOnUiThread {
-                camera_list_spinner.isEnabled = true
-                audio_list_spinner.isEnabled = true
+                mActivityBidirBinding.cameraListSpinner.isEnabled = true
+                mActivityBidirBinding.audioListSpinner.isEnabled = true
             }
         }
 

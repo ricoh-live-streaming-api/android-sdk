@@ -19,6 +19,7 @@ import android.util.Base64.DEFAULT
 import androidx.appcompat.app.AppCompatActivity
 import com.google.zxing.integration.android.IntentIntegrator
 import com.journeyapps.barcodescanner.CaptureActivity
+import com.ricoh.livestreaming.wearable_glass.databinding.ActivitySettingBinding
 import org.json.JSONException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
@@ -45,9 +46,14 @@ class SettingActivity : AppCompatActivity() {
 
     private var qrScanIntegrator: IntentIntegrator? = null
 
+    /** View Binding */
+    private lateinit var mActivitySettingBinding: ActivitySettingBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        mActivitySettingBinding = ActivitySettingBinding.inflate(layoutInflater)
+        setContentView(mActivitySettingBinding.root)
 
         val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
         if (!wifiManager.isWifiEnabled) {

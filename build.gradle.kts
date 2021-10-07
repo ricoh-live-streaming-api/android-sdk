@@ -8,9 +8,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.2")
-        classpath(kotlin("gradle-plugin", "1.3.41"))
-        classpath("com.kezong:fat-aar:1.2.12")
+        classpath("com.android.tools.build:gradle:4.2.1")
+        classpath(kotlin("gradle-plugin", "1.4.32"))
+        classpath("com.github.kezong:fat-aar:1.3.6")
     }
 }
 

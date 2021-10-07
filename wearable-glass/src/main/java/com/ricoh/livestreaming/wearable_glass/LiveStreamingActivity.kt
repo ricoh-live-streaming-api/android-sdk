@@ -17,9 +17,9 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
 import com.ricoh.livestreaming.theta.ThetaVideoEncoderFactory
+import com.ricoh.livestreaming.wearable_glass.databinding.ActivityLiveStreamingBinding
 import com.ricoh.livestreaming.webrtc.Camera2VideoCapturer
 import com.ricoh.livestreaming.webrtc.CodecUtils
-import kotlinx.android.synthetic.main.activity_live_streaming.*
 import org.slf4j.LoggerFactory
 import org.webrtc.*
 import java.util.*
@@ -52,9 +52,14 @@ class LiveStreamingActivity : AppCompatActivity() {
 
     private var mVideoRenderManager: VideoRenderManager? = null
 
+    /** View Binding */
+    private lateinit var mActivityLiveStreamingBinding: ActivityLiveStreamingBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_live_streaming)
+
+        mActivityLiveStreamingBinding = ActivityLiveStreamingBinding.inflate(layoutInflater)
+        setContentView(mActivityLiveStreamingBinding.root)
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         var volume = audioManager.getStreamVolume(AudioManager.STREAM_RING) * audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL) / audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
@@ -70,16 +75,16 @@ class LiveStreamingActivity : AppCompatActivity() {
         } else {
             CaptureFormat.CAPTURE_4K
         }
-        mVideoRenderManager = VideoRenderManager(local_view)
+        mVideoRenderManager = VideoRenderManager(mActivityLiveStreamingBinding.localView)
 
-        capture_capability.text = getString(mCurrentCaptureFormat.textResourceId)
-        progress_layout.visibility = GONE
-        local_view.visibility = GONE
-        capture_capability.visibility = GONE
+        mActivityLiveStreamingBinding.captureCapability.text = getString(mCurrentCaptureFormat.textResourceId)
+        mActivityLiveStreamingBinding.progressLayout.visibility = GONE
+        mActivityLiveStreamingBinding.localView.visibility = GONE
+        mActivityLiveStreamingBinding.captureCapability.visibility = GONE
 
         mEgl = EglBase.create()
         val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
-        local_view.init(eglContext, null)
+        mActivityLiveStreamingBinding.localView.init(eglContext, null)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         connect()
@@ -106,8 +111,8 @@ class LiveStreamingActivity : AppCompatActivity() {
 
     private fun connect() = executor.safeSubmit {
         runOnUiThread {
-            progress_message.text = getString(R.string.connecting)
-            progress_layout.visibility = VISIBLE
+            mActivityLiveStreamingBinding.progressMessage.text = getString(R.string.connecting)
+            mActivityLiveStreamingBinding.progressLayout.visibility = VISIBLE
         }
 
         try {
@@ -176,7 +181,7 @@ class LiveStreamingActivity : AppCompatActivity() {
             LOGGER.error("Failed to connect to server.", e)
             runOnUiThread {
                 showErrorDialog(getString(R.string.connect_error))
-                progress_layout.visibility = GONE
+                mActivityLiveStreamingBinding.progressLayout.visibility = GONE
             }
         }
     }
@@ -214,7 +219,7 @@ class LiveStreamingActivity : AppCompatActivity() {
             }
 
             mCapturer!!.changeCaptureFormat(mCurrentCaptureFormat.width, mCurrentCaptureFormat.height, mCurrentCaptureFormat.framerate)
-            capture_capability.text = getString(mCurrentCaptureFormat.textResourceId)
+            mActivityLiveStreamingBinding.captureCapability.text = getString(mCurrentCaptureFormat.textResourceId)
 
             return true
         } else if (keyCode == KEYCODE_DPAD_RIGHT) {
@@ -223,8 +228,8 @@ class LiveStreamingActivity : AppCompatActivity() {
         } else if (!isDialogShowing && keyCode == KEYCODE_DPAD_CENTER) {
             mKeyEventTimer?.cancel()
             if (isFinishKeyPressed) {
-                local_view.visibility = GONE
-                capture_capability.visibility = GONE
+                mActivityLiveStreamingBinding.localView.visibility = GONE
+                mActivityLiveStreamingBinding.captureCapability.visibility = GONE
 
                 executor.safeSubmit {
                     mClient!!.disconnect()
@@ -253,8 +258,8 @@ class LiveStreamingActivity : AppCompatActivity() {
             LOGGER.debug("Client#onConnecting")
 
             runOnUiThread {
-                progress_message.text = getString(R.string.connecting)
-                progress_layout.visibility = VISIBLE
+                mActivityLiveStreamingBinding.progressMessage.text = getString(R.string.connecting)
+                mActivityLiveStreamingBinding.progressLayout.visibility = VISIBLE
             }
         }
 
@@ -288,9 +293,9 @@ class LiveStreamingActivity : AppCompatActivity() {
             }, 0, 1000)
 
             runOnUiThread {
-                capture_capability.visibility = VISIBLE
-                progress_layout.visibility = GONE
-                local_view.visibility = VISIBLE
+                mActivityLiveStreamingBinding.captureCapability.visibility = VISIBLE
+                mActivityLiveStreamingBinding.progressLayout.visibility = GONE
+                mActivityLiveStreamingBinding.localView.visibility = VISIBLE
             }
         }
 
@@ -298,8 +303,8 @@ class LiveStreamingActivity : AppCompatActivity() {
             LOGGER.debug("Client#onClosing")
 
             runOnUiThread {
-                progress_message.text = getString(R.string.disconnecting)
-                progress_layout.visibility = VISIBLE
+                mActivityLiveStreamingBinding.progressMessage.text = getString(R.string.disconnecting)
+                mActivityLiveStreamingBinding.progressLayout.visibility = VISIBLE
             }
         }
 

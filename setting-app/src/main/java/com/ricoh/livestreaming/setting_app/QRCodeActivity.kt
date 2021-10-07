@@ -13,17 +13,22 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import kotlinx.android.synthetic.main.activity_qrcode.*
+import com.ricoh.livestreaming.setting_app.databinding.ActivityQrcodeBinding
 import java.nio.charset.StandardCharsets
 
 
 class QRCodeActivity : AppCompatActivity() {
+    /** View Binding */
+    private lateinit var mActivityQRCodeBinding: ActivityQrcodeBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_qrcode)
+
+        mActivityQRCodeBinding = ActivityQrcodeBinding.inflate(layoutInflater)
+        setContentView(mActivityQRCodeBinding.root)
 
         val param = intent.getStringExtra(MainActivity.INTENT_PARAM)
-        createQRCode(param, 500)
+        createQRCode(param!!, 500)
     }
 
     private fun createQRCode(data: String, size: Int) {
@@ -35,7 +40,7 @@ class QRCodeActivity : AppCompatActivity() {
         try {
             val barcodeEncoder = BarcodeEncoder()
             val bitmap = barcodeEncoder.encodeBitmap(String(bytes, charset), BarcodeFormat.QR_CODE, size, size, hints)
-            qrcode_image.setImageBitmap(bitmap)
+            mActivityQRCodeBinding.qrcodeImage.setImageBitmap(bitmap)
 
         } catch (e: WriterException) {
             throw AndroidRuntimeException("Barcode Error.", e)

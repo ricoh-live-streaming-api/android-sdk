@@ -4,6 +4,7 @@
 
 package com.ricoh.livestreaming.app
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -99,6 +100,7 @@ class AppAudioManager(private val context: Context) {
         }
     }
 
+    @SuppressLint("WrongConstant")
     private fun hasWiredHeadset(): Boolean {
         val devices = audioManager.getDevices(AudioManager.GET_DEVICES_ALL)
         for (device in devices) {

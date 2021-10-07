@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## v1.3.0
+* compileSdkVersionとtargetSdkVersionを`29`から`30`に変更
+* SDK修正
+  * open状態ではあるが接続が完了する前の僅かな間に`Client#changeMute()`を呼ぶとエラーが発生する問題を修正
+    * これに伴い以下のエラーコードを修正
+    * エラーコードのみの修正でエラーメッセージに変更はありません
+      * 旧`45207` => 新`45605`
+      * 旧`45216` => 新`45614`
+  * THETA利用時に設定しているShootingModeとStitchingModeがログにdebugで出力されるように修正
+  * P2P、P2P_TURN接続時でも`Client#updateMeta()`が実行できるように修正
+    * これに伴い以下のエラーコードを削除
+      * `45003`
+  * 外付けカメラ配信で画像の右端が崩れてしまう問題を修正
+* サンプルアプリ修正
+  * 共通
+    * gradleバージョンを`3.5.2`から`4.2.0`に更新
+    * kotlin-gradle-pluginバージョンを`1.3.41`から`1.4.32`に更新
+    * fat-aarバージョンを`1.2.12`から`1.3.6`に更新
+    * 利用している外部ライブラリのアップデート
+    * `kotlin-android-extensions`をViewBindingに変更
+  * `wearable-glass`
+    * READMEドキュメントの誤記を修正
+
 ## v1.2.0
 * API修正
   * `UnityPlugin#setUnityContext()`を追加
