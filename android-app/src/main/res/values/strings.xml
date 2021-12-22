@@ -4,6 +4,7 @@
     <string name="recv_activity_name">Receiver Sample</string>
     <string name="file_sender_activity_name">File Sender Sample</string>
     <string name="uvc_camera_activity_name">UVC Camera Sample</string>
+    <string name="screen_share_activity_name">Screen Share Sample</string>
     <string name="connect">Connect</string>
     <string name="connecting">Connecting…</string>
     <string name="disconnect">Disconnect</string>
@@ -28,4 +29,11 @@
     <string name="video">Video</string>
     <string name="mute">mute</string>
     <string name="unmute">unmute</string>
+    <string name="ice_servers_protocol">IceServersProtocol</string>
+    <string name="all">ALL</string>
+    <string name="udp">UDP</string>
+    <string name="tcp">TCP</string>
+    <string name="tls">TLS</string>
+    <string name="running">Running</string>
+    <string name="video_receive">Video Receive</string>
 </resources>

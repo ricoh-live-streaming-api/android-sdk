@@ -61,7 +61,27 @@ class UvcCameraActivity : AppCompatActivity() {
 
         supportActionBar!!.hide()
         mEgl = EglBase.create()
-        mViewLayoutManager = ViewLayoutManager(applicationContext, mEgl, mActivityUvcCameraBinding.viewLayout)
+        mViewLayoutManager = ViewLayoutManager(
+                applicationContext,
+                window,
+                mEgl,
+                mActivityUvcCameraBinding.viewLayout,
+                Config.getRoomType() == RoomSpec.RoomType.SFU,
+                object : ViewLayoutManager.Listener {
+                    override fun onVideoReceiveCheckedChanged(connectionId: String, isChecked: Boolean) {
+                        try {
+                            val videoRequirement = if (isChecked) {
+                                VideoRequirement.REQUIRED
+                            } else {
+                                VideoRequirement.UNREQUIRED
+                            }
+                            mClient?.changeMediaRequirements(connectionId, videoRequirement)
+                        } catch (e: SDKError) {
+                            LOGGER.error(e.toReportString())
+                        }
+                    }
+                }
+        )
 
         mActivityUvcCameraBinding.connectButton.setOnClickListener {
             if (mClient == null) {
@@ -167,6 +187,7 @@ class UvcCameraActivity : AppCompatActivity() {
                                 .sendingPriority(SendingVideoOption.SendingPriority.HIGH)
                                 .maxBitrateKbps(videoBitrate)
                                 .build()))
+                .iceServersProtocol(Config.getIceServersProtocol())
                 .build()
 
         mClient!!.connect(

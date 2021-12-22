@@ -16,6 +16,7 @@
     <string name="send_4k">4K</string>
     <string name="send_2k">2K</string>
     <string name="bitrate">Bitrate(kbps)</string>
+    <string name="initial_audio_mute">Initial audio mute</string>
 
     <string name="create">Create</string>
 </resources>

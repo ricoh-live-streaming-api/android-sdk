@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import com.ricoh.livestreaming.*
 import com.ricoh.livestreaming.theta.databinding.ActivityMainBinding
+import com.ricoh.livestreaming.theta.webapi.ThetaWebApiClient
 import com.ricoh.livestreaming.webrtc.CodecUtils
 import com.ricoh.livestreaming.webrtc.ThetaCameraCapturer
 import com.theta360.pluginlibrary.activity.PluginActivity
@@ -22,10 +23,9 @@ import com.theta360.pluginlibrary.callback.KeyCallback
 import com.theta360.pluginlibrary.receiver.KeyReceiver
 import com.theta360.pluginlibrary.values.LedColor
 import com.theta360.pluginlibrary.values.LedTarget
+import com.theta360.pluginlibrary.values.TextArea
 import org.apache.commons.collections4.IteratorUtils
 import org.slf4j.LoggerFactory
-import org.theta4j.webapi.Options.DATE_TIME_ZONE
-import org.theta4j.webapi.Theta
 import org.webrtc.EglBase
 import org.webrtc.EglBase14
 import org.webrtc.MediaStream
@@ -74,7 +74,9 @@ class MainActivity : PluginActivity() {
 
     private var mStatsTimer: Timer? = null
 
-    private val thetaPlugin = Theta.createForPlugin()
+    private var audioMute = MuteType.HARD_MUTE
+
+    private var lsTracks = arrayListOf<LSTrack>()
 
     /** View Binding */
     private lateinit var mActivityMainBinding: ActivityMainBinding
@@ -133,6 +135,38 @@ class MainActivity : PluginActivity() {
         mActivityMainBinding.roomTypeRadio.setOnCheckedChangeListener { _, checkedId ->
             Config.setRoomType(applicationContext, checkedId)
         }
+
+        // Mute Type
+        val confAudioMute = BuildConfig.INITIAL_AUDIO_MUTE
+        audioMute = if (confAudioMute == "unmute" || confAudioMute == "null") MuteType.UNMUTE else MuteType.HARD_MUTE
+    }
+
+    private fun updateText(text: String) {
+        val output: MutableMap<TextArea, String> = EnumMap(com.theta360.pluginlibrary.values.TextArea::class.java)
+        output[TextArea.BOTTOM] = text
+        notificationOledTextShow(output)
+    }
+
+    private fun changeAudioMute(muteType: MuteType) {
+        if (mClient?.state != Client.State.OPEN) return
+
+        val track = lsTracks.find { it.mediaStreamTrack.kind() == "audio" }
+        if (track == null) {
+            LOGGER.info("Not found audio track")
+            return
+        }
+        try {
+            mClient?.changeMute(track, muteType)
+            audioMute = muteType
+            if (audioMute == MuteType.HARD_MUTE) {
+                updateText("audio: mute")
+            } else {
+                updateText("audio: unmute")
+            }
+            LOGGER.debug("audio mute change to {}", muteType)
+        } catch (e: SDKError) {
+            LOGGER.error(e.toReportString())
+        }
     }
 
     override fun onResume() {
@@ -159,6 +193,10 @@ class MainActivity : PluginActivity() {
                     mThetaVideoEncoderFactory!!.setTargetBitrate(bitrate)
                     LOGGER.debug("Target bitrate set to {}", bitrate)
                     notificationAudioSelf()
+                } else if (keyCode == KeyReceiver.KEYCODE_FUNCTION) {
+                    // toggle mute
+                    val muteType = if (audioMute == MuteType.UNMUTE)  MuteType.HARD_MUTE else MuteType.UNMUTE
+                    changeAudioMute(muteType)
                 }
             }
 
@@ -180,6 +218,7 @@ class MainActivity : PluginActivity() {
                 }
             }
 
+            @SuppressLint("SimpleDateFormat")
             override fun onKeyLongPress(keyCode: Int, keyEvent: KeyEvent) {
                 if (keyCode == KeyReceiver.KEYCODE_CAMERA) {
                     if (mClient == null) {
@@ -190,11 +229,11 @@ class MainActivity : PluginActivity() {
                             val roomSpec = RoomSpec(Config.getRoomType())
                             val rand = Random()
                             val connectionId = "THETA" + rand.nextInt(1000)
-                            val dateTimeZone = thetaPlugin.getOption(DATE_TIME_ZONE)
+                            val dateTimeZone = ThetaWebApiClient.getDateTimeZone()
                             val dateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ssZZ")
                             val date = dateFormat.parse(dateTimeZone)
                             val accessToken = JwtAccessToken.createAccessToken(
-                                    BuildConfig.CLIENT_SECRET, mActivityMainBinding.roomId.text.toString(), roomSpec, date, connectionId)
+                                    BuildConfig.CLIENT_SECRET, mActivityMainBinding.roomId.text.toString(), roomSpec, date!!, connectionId)
                             val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
                             mClient = Client(applicationContext, eglContext, mThetaVideoEncoderFactory).apply {
                                 setEventListener(ClientListener())
@@ -205,12 +244,13 @@ class MainActivity : PluginActivity() {
                                     .build()
 
                             val stream = mClient!!.getUserMedia(constraints)
-                            val lsTracks = arrayListOf<LSTrack>()
+                            lsTracks = arrayListOf()
                             // Track Metaデータに関しては以下を参照ください
                             // https://api.livestreaming.ricoh/document/ricoh-live-streaming-conference-%e3%82%a2%e3%83%97%e3%83%aa%e3%82%b1%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%b3%e9%96%8b%e7%99%ba%e8%80%85%e3%82%ac%e3%82%a4%e3%83%89/#Track_Metadata
                             for (track in stream.audioTracks) {
                                 val trackOption = LSTrackOption.Builder()
                                         .meta(mapOf("mediaType" to "VIDEO_AUDIO"))
+                                        .muteType(audioMute)
                                         .build()
                                 lsTracks.add(LSTrack(track, stream, trackOption))
                             }
@@ -232,11 +272,15 @@ class MainActivity : PluginActivity() {
                                                     .build()))
                                     .receiving(ReceivingOption(false))
                                     .build()
-
                             mClient!!.connect(
                                     BuildConfig.CLIENT_ID,
                                     accessToken,
                                     option)
+                            if (audioMute == MuteType.HARD_MUTE) {
+                                updateText("audio: mute")
+                            } else {
+                                updateText("audio: unmute")
+                            }
                         }
                     } else {
                         executor.submit {

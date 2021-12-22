@@ -31,6 +31,7 @@ android {
         } else {
             buildConfigField("int", "VIDEO_BITRATE", "10000")
         }
+        buildConfigField("String", "INITIAL_AUDIO_MUTE", "\"" + props["initial_audio_mute"] + "\"")
     }
 
     compileOptions {
@@ -70,7 +71,8 @@ dependencies {
     implementation("com.github.tony19:logback-android:1.3.0-3")
     implementation("com.theta360:pluginlibrary:2.1.0")
     implementation("org.apache.commons:commons-collections4:4.4")
-    implementation("org.theta4j:theta-web-api:1.4.0")
+    implementation("com.squareup.okhttp3:okhttp:4.8.1")
+    implementation("com.google.code.gson:gson:2.8.6")
     api("io.jsonwebtoken:jjwt-api:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-orgjson:0.11.2") {
@@ -80,6 +82,4 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.3.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
-    implementation("com.squareup.okhttp3", "okhttp", "3.11.0")
-    implementation("com.google.code.gson", "gson", "2.8.5")
 }

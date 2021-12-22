@@ -52,6 +52,10 @@ class MainActivity : AppCompatActivity() {
             this.startChildActivity(UvcCameraActivity::class.java)
         }
 
+        mActivityMainBinding.startScreenShareCameraActivity.setOnClickListener {
+            this.startChildActivity(ScreenShareActivity::class.java)
+        }
+
         // Load configurations.
         Config.load(this.applicationContext)
 
@@ -85,6 +89,12 @@ class MainActivity : AppCompatActivity() {
         mActivityMainBinding.roomTypeRadio.check(Config.getSelectedRoomTypeID())
         mActivityMainBinding.roomTypeRadio.setOnCheckedChangeListener { _, checkedId ->
             Config.setRoomType(applicationContext, checkedId)
+        }
+
+        // ICE Servers protocol
+        mActivityMainBinding.iceServersProtocolRadio.check(Config.getSelectedIceServersProtocolID())
+        mActivityMainBinding.iceServersProtocolRadio.setOnCheckedChangeListener { _, checkedId ->
+            Config.setIceServersProtocol(applicationContext, checkedId)
         }
     }
 

@@ -14,12 +14,15 @@ RICOH Live Streaming API と THETA プラグインの組み合わせで配信す
   * `client_id` と `client_secret` と `room_id` は実際の値を入れる
   * `video_bitrate` は送信するビデオのビットレートの上限値を設定する
     * 未指定時は 10000 (10Mbps)
-
+  * `initial_audio_mute` は接続開始時のオーディオミュート状態を設定する
+    * 選択肢は mute|unmute
+    * 未指定時は unmute
 ```
 client_id=3341e140-0290-43f5-95a0-bd9f98d8ecdc
 client_secret=kxiFVi6lzf14dffq3fg46ghg7dip1ash74ioisudsensJ9fe89f4fjijoiafDVcNmg
 room_id=50aae54b-5c5f-467f-b4c7-b761b99802bf
 video_bitrate=10000
+initial_audio_mute=unmute
 ```
 
 ### Room帯域幅予約値
@@ -52,6 +55,8 @@ video_bitrate=10000
   * Live LED 点滅 : 接続準備中
   * Live LED 点灯 : 接続成功 (配信中)
   * Live LED すばやく点滅 : 切断準備中
+
+* THETA Z1 でFnボタン短押し : オーディオミュート状態の変更
 
 ## ログ出力
 ### Clientログ

@@ -13,6 +13,8 @@ class Preference {
         private const val SEND_RESOLUTION_KEY = "send_resolution"
         private const val BITRATE_KEY = "bitrate"
         private const val BITRATE_DEFAULT_VALUE = 7_000 // 7Mbps
+        private const val INITIAL_AUDIO_MUTE_KEY = "audio_mute"
+        private const val INITIAL_AUDIO_MUTE_DEFAULT_VALUE = false
 
         fun saveRoomId(context: Context, roomId: String) {
             val preference = PreferenceManager.getDefaultSharedPreferences(context)
@@ -48,6 +50,18 @@ class Preference {
         fun getVideoBitrate(context: Context): Int {
             val preference = PreferenceManager.getDefaultSharedPreferences(context)
             return preference.getInt(BITRATE_KEY, BITRATE_DEFAULT_VALUE)
+        }
+
+        fun saveInitialAudioMute(context: Context, audioMute: Boolean) {
+            val preference = PreferenceManager.getDefaultSharedPreferences(context)
+            val editor = preference.edit()
+            editor.putBoolean(INITIAL_AUDIO_MUTE_KEY, audioMute)
+            editor.apply()
+        }
+
+        fun isInitialAudioMute(context: Context): Boolean {
+            val preference = PreferenceManager.getDefaultSharedPreferences(context)
+            return preference.getBoolean(INITIAL_AUDIO_MUTE_KEY, INITIAL_AUDIO_MUTE_DEFAULT_VALUE)
         }
     }
 }

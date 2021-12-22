@@ -5,7 +5,7 @@
 pluginManagement {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 

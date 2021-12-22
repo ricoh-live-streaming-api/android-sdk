@@ -6,10 +6,13 @@ package com.ricoh.livestreaming.app
 
 import android.content.Context
 import android.graphics.Point
+import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.ViewGroup
+import android.view.Window
 import android.view.WindowManager
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import org.slf4j.LoggerFactory
 import org.webrtc.EglBase
@@ -19,15 +22,22 @@ import org.webrtc.VideoTrack
 
 class ViewLayoutManager(
         private val mContext: Context,
+        private val mWindow: Window,
         private val mEgl: EglBase?,
-        private val mParentLayout: FrameLayout) {
+        private val mParentLayout: FrameLayout,
+        private val isNeedVideoReceiveCheckBox: Boolean,
+        private val mListener: Listener) {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ViewLayoutManager::class.java)
     }
 
+    interface Listener {
+        fun onVideoReceiveCheckedChanged(connectionId: String, isChecked: Boolean)
+    }
+
     private val mWindowManager: WindowManager = mContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val mLocalView: SurfaceViewRenderer = SurfaceViewRenderer(mContext)
-    private val mRemoteViews: MutableMap<String, SurfaceViewRenderer> = mutableMapOf()
+    private val mRemoteViews: MutableMap<String, RemoteView> = mutableMapOf()
 
     init {
         val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
@@ -59,16 +69,42 @@ class ViewLayoutManager(
     }
 
     @Synchronized
-    fun addRemoteTrack(connectionId: String, videoTrack: VideoTrack) {
+    fun addRemoteTrack(connectionId: String, videoTrack: VideoTrack, isNeedVideoReceived: Boolean = true) {
         LOGGER.info("addRemoteTrack(connectionId={})", connectionId)
         val renderer = SurfaceViewRenderer(mContext)
         val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
 
         renderer.init(eglContext, null)
         videoTrack.addSink(renderer)
-        mParentLayout.addView(renderer)
+        val layout = FrameLayout(mContext)
+        layout.addView(renderer)
+        if (isNeedVideoReceiveCheckBox) {
+            val checkBox = CheckBox(mContext).apply {
+                text = mContext.resources.getText(R.string.video_receive)
+                setBackgroundColor(mContext.getColor(R.color.video_receive_checkbox_background))
+                setTextColor(mContext.getColor(android.R.color.white))
+                isChecked = isNeedVideoReceived
+                val padding = mContext.resources.getDimension(R.dimen.video_receive_checkbox_padding).toInt()
+                setPadding(padding, padding, padding, padding)
+            }
+            val layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.BOTTOM
+                marginStart = mContext.resources.getDimension(R.dimen.video_receive_checkbox_margin_start).toInt()
+                bottomMargin = mContext.resources.getDimension(R.dimen.video_receive_checkbox_margin_bottom).toInt()
+            }
+            checkBox.text = mContext.resources.getText(R.string.video_receive)
+            checkBox.isChecked = isNeedVideoReceived
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                mListener.onVideoReceiveCheckedChanged(connectionId, isChecked)
+            }
+            layout.addView(checkBox, layoutParams)
+        }
+        mParentLayout.addView(layout)
 
-        mRemoteViews[connectionId] = renderer
+        mRemoteViews[connectionId] = RemoteView(layout, renderer)
         updateLayout()
     }
 
@@ -77,8 +113,8 @@ class ViewLayoutManager(
         LOGGER.info("removeRemoteTrack(connectionId={})", connectionId)
         val view = mRemoteViews[connectionId]
         if (view != null) {
-            view.release()
-            mParentLayout.removeView(view)
+            view.render.release()
+            mParentLayout.removeView(view.layout)
         }
         mRemoteViews.remove(connectionId)
         updateLayout()
@@ -88,7 +124,7 @@ class ViewLayoutManager(
     fun clear() {
         LOGGER.info("clear()")
         for ((k, v) in mRemoteViews) {
-            v.release()
+            v.render.release()
         }
         mRemoteViews.clear()
         mParentLayout.removeAllViews()
@@ -108,7 +144,11 @@ class ViewLayoutManager(
         // Get screen size.
         val dm = DisplayMetrics()
         mWindowManager.defaultDisplay.getMetrics(dm)
-        val size = Point(dm.widthPixels, dm.heightPixels)
+        // Get status bar height
+        val rect = Rect()
+        mWindow.decorView.getWindowVisibleDisplayFrame(rect)
+
+        val size = Point(dm.widthPixels, dm.heightPixels - rect.top)
         LOGGER.info("### {}x{}", mParentLayout.width, mParentLayout.height)
 
         for ((k, v) in mRemoteViews) {
@@ -209,11 +249,13 @@ class ViewLayoutManager(
                     }
                 }
             }
-            v.layoutParams = params
+            v.layout.layoutParams = params
             index++
         }
 
         mParentLayout.removeView(mLocalView)
         mParentLayout.addView(mLocalView)
     }
+
+    inner class RemoteView(val layout: FrameLayout, val render: SurfaceViewRenderer)
 }

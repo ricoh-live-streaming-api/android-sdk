@@ -20,7 +20,8 @@ class RTCStatsLogger(
         file: File,
         private val statsFilter: (RTCStats) -> Boolean = { stats ->
             stats.type == "candidate-pair" || stats.type == "outbound-rtp" ||
-                    stats.type == "inbound-rtp" || stats.type == "remote-inbound-rtp" || stats.type == "track" || stats.type == "sender" || stats.type == "media-source"
+                    stats.type == "inbound-rtp" || stats.type == "remote-inbound-rtp" || stats.type == "track" || stats.type == "sender" || stats.type == "media-source" ||
+                    stats.type == "local-candidate" || stats.type == "remote-candidate"
         }
 ) : Closeable {
     private val out = BufferedOutputStream(file.outputStream()).writer()

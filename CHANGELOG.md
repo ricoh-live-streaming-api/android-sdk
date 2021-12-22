@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## v1.4.0
+* API変更
+  * changeMediaRequirementsで対向connectionごとにvideoを受信するか指定できるようにした
+  * OptionのiceServersProtocolでTURNサーバに接続する際にどのトランスポートプロトコルで接続するか指定できるようにした。この属性で"tls"を指定してTCP443ポートの強制が可能になり、他のトランスポートプロトコルを使ってパフォーマンス最適化する余地を犠牲にして、ファイヤーウォールやプロキシを通過する確率を上げることができる
+* SDK修正
+  * 特定のタイミングでchangeMute、updateTrackMetaを実行した場合に対向connectionに内容が通知されない不具合を修正
+  * 要求されたRoomSpecに対応するSFUまたはTURNが一時的にクラウド上に存在しない場合に専用のエラーコード53806を追加 
+  * 初期化処理時にハードウェアでサポートしているコーデック一覧をログ出力するように修正
+  * VP8/VP9指定時でハードウェアコーデックがない場合にソフトウェアコーデックを使用するように修正
+  * open状態以外で処理できないイベントハンドラでInternalErrorにならないように修正
+* サンプルアプリ修正
+  * android-app
+    * ScreenShareActivityを追加
+  * theta-plugin
+    * オーディオミュート機能を追加 
+    * jcenterからmavenCentralへの移行のためにTHETA Web Apiを呼び出すように修正してtheta4jライブラリ依存を解消
+  * wearable-glass
+    * オーディオミュート機能を追加
+* 共通修正
+  * gradle ビルドスクリプトで指定するリモートリポジトリを jcenter() から mavenCentral() に変更
+
 ## v1.3.0
 * compileSdkVersionとtargetSdkVersionを`29`から`30`に変更
 * SDK修正

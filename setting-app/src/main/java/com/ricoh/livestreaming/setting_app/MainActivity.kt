@@ -28,11 +28,13 @@ class MainActivity : AppCompatActivity(), TextWatcher {
         const val RESOLUTION_4K = 0
         const val RESOLUTION_2K = 1
         const val BITRATE_KEY = "BITRATE"
+        const val INITIAL_AUDIO_MUTE_KEY = "INITIAL_AUDIO_MUTE"
 
         const val INTENT_PARAM = "param"
 
         const val BITRATE_DEFAULT_VALUE = "7000"    // 7Mbps
         const val RESOLUTION_DEFAULT_VALUE = RESOLUTION_4K
+        const val INITIAL_AUDIO_MUTE_DEFAULT_VALUE = false
     }
     
     /** View Binding */
@@ -85,6 +87,7 @@ class MainActivity : AppCompatActivity(), TextWatcher {
             }
             saveData(SEND_RESOLUTION_KEY, resolution)
             saveData(BITRATE_KEY, mActivityMainBinding.bitrateEdit.text.toString())
+            saveData(INITIAL_AUDIO_MUTE_KEY, mActivityMainBinding.initialAudioMute.isChecked)
 
             val json = JSONObject().apply {
                 put(SSID_KEY, mActivityMainBinding.ssidEdit.text.toString())
@@ -93,6 +96,7 @@ class MainActivity : AppCompatActivity(), TextWatcher {
                 put(ROOM_ID_KEY, mActivityMainBinding.roomIdEdit.text.toString())
                 put(SEND_RESOLUTION_KEY, resolution)
                 put(BITRATE_KEY, Integer.parseInt(mActivityMainBinding.bitrateEdit.text.toString()))
+                put(INITIAL_AUDIO_MUTE_KEY, mActivityMainBinding.initialAudioMute.isChecked)
             }
             val intent = Intent(applicationContext, QRCodeActivity::class.java)
             intent.putExtra(INTENT_PARAM, json.toString())
@@ -121,6 +125,9 @@ class MainActivity : AppCompatActivity(), TextWatcher {
                 mActivityMainBinding.sendResolutionGroup.check(R.id.send_2k_radio)
             }
         }
+
+        mActivityMainBinding.initialAudioMute.isChecked =
+                getSavedBooleanData(INITIAL_AUDIO_MUTE_KEY, INITIAL_AUDIO_MUTE_DEFAULT_VALUE)
     }
 
     override fun onResume() {
@@ -176,4 +183,14 @@ class MainActivity : AppCompatActivity(), TextWatcher {
         edit.apply()
     }
 
+    private fun getSavedBooleanData(key: String, defaultValue: Boolean = false): Boolean {
+        val pref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        return pref.getBoolean(key, defaultValue)
+    }
+
+    private fun saveData(key: String, data: Boolean) {
+        val edit = PreferenceManager.getDefaultSharedPreferences(applicationContext).edit()
+        edit.putBoolean(key, data)
+        edit.apply()
+    }
 }

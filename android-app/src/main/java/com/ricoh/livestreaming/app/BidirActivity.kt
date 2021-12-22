@@ -51,7 +51,7 @@ class BidirActivity : AppCompatActivity() {
     private var mAudioListAdapter: AudioListAdapter? = null
 
     private var mViewLayoutManager: ViewLayoutManager? = null
-    
+
     /** View Binding */
     private lateinit var mActivityBidirBinding: ActivityBidirBinding
 
@@ -63,7 +63,27 @@ class BidirActivity : AppCompatActivity() {
 
         supportActionBar!!.hide()
         mEgl = EglBase.create()
-        mViewLayoutManager = ViewLayoutManager(applicationContext, mEgl, mActivityBidirBinding.viewLayout)
+        mViewLayoutManager = ViewLayoutManager(
+                applicationContext,
+                window,
+                mEgl,
+                mActivityBidirBinding.viewLayout,
+                Config.getRoomType() == RoomSpec.RoomType.SFU,
+                object : ViewLayoutManager.Listener {
+                    override fun onVideoReceiveCheckedChanged(connectionId: String, isChecked: Boolean) {
+                        try {
+                            val videoRequirement = if (isChecked) {
+                                VideoRequirement.REQUIRED
+                            } else {
+                                VideoRequirement.UNREQUIRED
+                            }
+                            mClient?.changeMediaRequirements(connectionId, videoRequirement)
+                        } catch (e: SDKError) {
+                            LOGGER.error(e.toReportString())
+                        }
+                    }
+                }
+        )
 
         mActivityBidirBinding.connectButton.setOnClickListener {
             if (mClient == null) {
@@ -361,6 +381,7 @@ class BidirActivity : AppCompatActivity() {
                                 .sendingPriority(SendingVideoOption.SendingPriority.HIGH)
                                 .maxBitrateKbps(videoBitrate)
                                 .build()))
+                .iceServersProtocol(Config.getIceServersProtocol())
                 .build()
 
         mClient!!.connect(

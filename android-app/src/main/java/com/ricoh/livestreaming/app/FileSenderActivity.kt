@@ -129,6 +129,7 @@ class FileSenderActivity : AppCompatActivity() {
                                 .sendingPriority(SendingVideoOption.SendingPriority.NORMAL)
                                 .maxBitrateKbps(BuildConfig.VIDEO_BITRATE)
                                 .build()))
+                .iceServersProtocol(Config.getIceServersProtocol())
                 .build()
 
         mClient!!.connect(

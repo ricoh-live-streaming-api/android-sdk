@@ -3,7 +3,7 @@
 buildscript {
     repositories {**ARTIFACTORYREPOSITORY**
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -14,7 +14,7 @@ buildscript {
 allprojects {
     repositories {**ARTIFACTORYREPOSITORY**
         google()
-        jcenter()
+        mavenCentral()
         flatDir {
             dirs 'libs'
         }

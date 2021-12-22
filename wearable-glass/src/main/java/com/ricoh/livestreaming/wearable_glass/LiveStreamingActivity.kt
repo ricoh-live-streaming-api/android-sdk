@@ -52,6 +52,9 @@ class LiveStreamingActivity : AppCompatActivity() {
 
     private var mVideoRenderManager: VideoRenderManager? = null
 
+    private var audioMute = MuteType.HARD_MUTE
+    private var localLsTracks = arrayListOf<LSTrack>()
+
     /** View Binding */
     private lateinit var mActivityLiveStreamingBinding: ActivityLiveStreamingBinding
 
@@ -81,6 +84,14 @@ class LiveStreamingActivity : AppCompatActivity() {
         mActivityLiveStreamingBinding.progressLayout.visibility = GONE
         mActivityLiveStreamingBinding.localView.visibility = GONE
         mActivityLiveStreamingBinding.captureCapability.visibility = GONE
+
+        if (Preference.isInitialAudioMute(applicationContext)) {
+            audioMute = MuteType.HARD_MUTE
+            mActivityLiveStreamingBinding.micIcon.setImageResource(R.drawable.baseline_mic_off_white_24)
+        } else {
+            audioMute = MuteType.UNMUTE
+            mActivityLiveStreamingBinding.micIcon.setImageResource(R.drawable.baseline_mic_white_24)
+        }
 
         mEgl = EglBase.create()
         val eglContext = mEgl!!.eglBaseContext as EglBase14.Context
@@ -146,24 +157,25 @@ class LiveStreamingActivity : AppCompatActivity() {
                     .build()
 
             val stream = mClient!!.getUserMedia(constraints)
-            val lsTracks = arrayListOf<LSTrack>()
+            localLsTracks = arrayListOf<LSTrack>()
             // Track Metaデータに関しては以下を参照ください
             // https://api.livestreaming.ricoh/document/ricoh-live-streaming-conference-%e3%82%a2%e3%83%97%e3%83%aa%e3%82%b1%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%b3%e9%96%8b%e7%99%ba%e8%80%85%e3%82%ac%e3%82%a4%e3%83%89/#Track_Metadata
             for (track in stream.audioTracks) {
                 val trackOption = LSTrackOption.Builder()
                         .meta(mapOf("mediaType" to "VIDEO_AUDIO"))
+                        .muteType(audioMute)
                         .build()
-                lsTracks.add(LSTrack(track, stream, trackOption))
+                localLsTracks.add(LSTrack(track, stream, trackOption))
             }
             for (track in stream.videoTracks) {
                 val trackOption = LSTrackOption.Builder()
                         .meta(mapOf("mediaType" to "VIDEO_AUDIO"))
                         .build()
-                lsTracks.add(LSTrack(track, stream, trackOption))
+                localLsTracks.add(LSTrack(track, stream, trackOption))
             }
 
             val meta = Option.Builder()
-                    .localLSTracks(lsTracks)
+                    .localLSTracks(localLsTracks)
                     .meta(mapOf("username" to "Wearable"))
                     .sending(SendingOption(
                             SendingVideoOption.Builder()
@@ -247,9 +259,40 @@ class LiveStreamingActivity : AppCompatActivity() {
                 isFinishKeyPressed = true
             }
             return true
+        } else if (keyCode == KEYCODE_MENU) {
+            // toggle mute
+            val muteType = if (audioMute == MuteType.UNMUTE) {
+                MuteType.HARD_MUTE
+            } else {
+                MuteType.UNMUTE
+            }
+            changeAudioMute(muteType)
+            return true
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    private fun changeAudioMute(muteType: MuteType) {
+        if (mClient?.state != Client.State.OPEN) {
+            return
+        }
+
+        val track = localLsTracks.find { it.mediaStreamTrack is AudioTrack }
+        if (track == null) {
+            LOGGER.info("Not found audio track")
+            return
+        }
+
+        mClient?.changeMute(track, muteType)
+        audioMute = muteType
+        val iconResourceId = if (audioMute == MuteType.HARD_MUTE) {
+            R.drawable.baseline_mic_off_white_24
+        } else {
+            R.drawable.baseline_mic_white_24
+        }
+        mActivityLiveStreamingBinding.micIcon.setImageResource(iconResourceId)
+        LOGGER.debug("audio mute change to {}", muteType)
     }
 
     inner class ClientListener : Client.Listener {

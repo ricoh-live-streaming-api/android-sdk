@@ -5,7 +5,7 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.1")
@@ -18,7 +18,7 @@ allprojects {
     repositories {
         maven { url = uri("https://github.com/ricohapi/theta-plugin-library/raw/master/repository") }
         google()
-        jcenter()
+        mavenCentral()
 
         flatDir {
             dirs("libs")
