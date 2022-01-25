@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdkVersion(31)
     defaultConfig {
         applicationId = "com.ricoh.livestreaming.setting_app"
         minSdkVersion(25)

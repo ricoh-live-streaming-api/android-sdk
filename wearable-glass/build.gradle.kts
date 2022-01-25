@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdkVersion(31)
     defaultConfig {
         applicationId = "com.ricoh.livestreaming.wearable_glass"
         minSdkVersion(25)

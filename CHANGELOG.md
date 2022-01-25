@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v1.5.0
+* SDK修正
+  * libWebRTCをM96に変更
+  * Unity向け修正
+    * マルチスレッドレンダリングに対応可能にするために `getRenderEventFunc()` を追加
+      * 詳細な利用方法はUnityMultithreadRendering.mdを参照
+* 共通修正
+  * compileSdkVersionを30から31に変更
+
 ## v1.4.0
 * API変更
   * changeMediaRequirementsで対向connectionごとにvideoを受信するか指定できるようにした
