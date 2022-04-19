@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: ./libs/client-sdk-1.5.0.aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6bd2f704837e3b98f15bfffadd011516/jetified-client-sdk-1.5.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6bd2f704837e3b98f15bfffadd011516/jetified-client-sdk-1.5.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6bd2f704837e3b98f15bfffadd011516/jetified-client-sdk-1.5.0/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6bd2f704837e3b98f15bfffadd011516/jetified-client-sdk-1.5.0/jars/libs/iftusb.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6bd2f704837e3b98f15bfffadd011516/jetified-client-sdk-1.5.0/jars/libs/owliftlib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

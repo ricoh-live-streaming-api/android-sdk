@@ -1,4 +1,26 @@
 # CHANGELOG
+## v1.6.0
+* API変更
+  * changeVideoSendBitrateで接続中に映像送信ビットレートを変更できるようにした
+  * (dev環境のみ提供のβ機能)ConnectOptionのsending.enabledでクライアントの送信機能を無効にできるようにした。同一Room中に大量に送信機能が有効なクライアントが存在する場合、クライアントに大きな処理負荷や遅延が発生してしまうが、このオプションで低減することができる
+  * CodecUtils#getSupportedEncoderCodecInfoでシステムでサポートしているエンコーダのコーデックを取得できるようにした
+  * CodecUtils#getSupportedDecoderCodecInfoでシステムでサポートしているデコーダのコーデックを取得できるようにした
+* SDK修正
+  * Unity向けaarとAndroid Native向けaarを統合 
+  * 規定時間内にIceConnectionが接続確立しなかった場合にIceConnectionTimeoutエラーを通知
+  * closing/closed状態で発生するInternalErrorをListenerへ通知しないように修正
+  * WebSocket切断検知のためにWebSocketコネクションタイムアウト45秒を設定
+* サンプルアプリ修正
+  * 以下のサンプルアプリを別リポジトリに移行
+    * theta-plugin
+    * wearable-glass
+    * unity-app
+* 共通修正
+  * minSdkVersionを25から23に変更
+
+## v1.6.0-alpha1
+* SDK修正
+  * P2P、P2P/TURN時に`ThetaVideoEncoderFactory`のコンストラクタで渡されたサポートコーデック以外がコーデックとして選択されてしまう不具合を修正
 
 ## v1.5.0
 * SDK修正

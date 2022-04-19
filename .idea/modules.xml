@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-sdk.iml" filepath="$PROJECT_DIR$/.idea/modules/android-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-app/android-sdk.android-app.iml" filepath="$PROJECT_DIR$/.idea/modules/android-app/android-sdk.android-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/setting-app/android-sdk.setting-app.iml" filepath="$PROJECT_DIR$/.idea/modules/setting-app/android-sdk.setting-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/theta-plugin/android-sdk.theta-plugin.iml" filepath="$PROJECT_DIR$/.idea/modules/theta-plugin/android-sdk.theta-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/wearable-glass/android-sdk.wearable-glass.iml" filepath="$PROJECT_DIR$/.idea/modules/wearable-glass/android-sdk.wearable-glass.iml" />
+    </modules>
+  </component>
+</project>

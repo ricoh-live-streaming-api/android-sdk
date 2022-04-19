@@ -131,15 +131,15 @@ class BidirActivity : AppCompatActivity() {
                     val track = localLSTracks.find { it.mediaStreamTrack is VideoTrack }
                     if (track == null) {
                         LOGGER.info("Not found video track")
-                        return;
+                        return
                     }
 
                     mVideoCapturer?.stop()
                     mVideoCapturer?.release()
 
-                    var capWidth: Int
-                    var capHeight: Int
-                    if ((mActivityBidirBinding.capSpinner.getSelectedItem()) == "4K") {
+                    val capWidth: Int
+                    val capHeight: Int
+                    if ((mActivityBidirBinding.capSpinner.selectedItem) == "4K") {
                         capWidth = 3840
                         capHeight = 2160
                     } else {
@@ -188,7 +188,7 @@ class BidirActivity : AppCompatActivity() {
                     val track = localLSTracks.find { it.mediaStreamTrack is AudioTrack }
                     if (track == null) {
                         LOGGER.info("Not found audio track")
-                        return;
+                        return
                     }
 
                     val constraints = MediaStreamConstraints.Builder()
@@ -257,6 +257,31 @@ class BidirActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // video bitrate
+        mActivityBidirBinding.videoBitrateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // nothing to do.
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val bitrate = mActivityBidirBinding.videoBitrateSpinner.selectedItem.toString().toInt()
+                LOGGER.info("onItemSelected: Bitrate=$bitrate")
+
+                if (mClient?.state == Client.State.OPEN) {
+                    val track = localLSTracks.find { it.mediaStreamTrack is VideoTrack }
+                    if (track == null) {
+                        LOGGER.info("Not found video track")
+                        return
+                    }
+                    try {
+                        mClient!!.changeVideoSendBitrate(bitrate)
+                    } catch (e: SDKError) {
+                        LOGGER.error("Failed to change video bitrate.{}", e.toReportString())
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -276,7 +301,7 @@ class BidirActivity : AppCompatActivity() {
             mActivityBidirBinding.controlsLayout.visibility = View.VISIBLE
 
             mHandler.removeCallbacksAndMessages(null)
-            mHandler.postDelayed(Runnable {
+            mHandler.postDelayed({
                 mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
                 mActivityBidirBinding.controlsLayout.visibility = View.GONE
             }, 3000)
@@ -287,19 +312,19 @@ class BidirActivity : AppCompatActivity() {
 
 
     private fun connect() = executor.safeSubmit {
-        var roomId = mActivityBidirBinding.roomId.text.toString()
+        val roomId = mActivityBidirBinding.roomId.text.toString()
 
-        var capWidth = 0
-        var capHeight = 0
-        var videoBitrate = BuildConfig.VIDEO_BITRATE
+        val capWidth: Int
+        val capHeight: Int
+        var videoBitrate = mActivityBidirBinding.videoBitrateSpinner.selectedItem.toString().toInt()
 
-        if ((mActivityBidirBinding.capSpinner.getSelectedItem()) == "4K") {
+        if ((mActivityBidirBinding.capSpinner.selectedItem) == "4K") {
             capWidth = 3840
             capHeight = 2160
         } else {
             capWidth = 1920
             capHeight = 1080
-            videoBitrate = videoBitrate / 4
+            videoBitrate /= 4
         }
 
         LOGGER.info("Try to connect. RoomType={}", Config.getRoomType())
@@ -371,16 +396,26 @@ class BidirActivity : AppCompatActivity() {
             localLSTracks.add(LSTrack(track, stream, trackOption))
         }
 
+        val (isSending, isReceiving) = when (mActivityBidirBinding.sendRecvRadio.checkedRadioButtonId) {
+            R.id.send_recv -> Pair(first = true, second = true)
+            R.id.send_only -> Pair(first = true, second = false)
+            else -> Pair(first = false, second = true)
+        }
         val option = Option.Builder()
                 .loggingSeverity(Config.getLoggingSeverity())
-                .localLSTracks(localLSTracks)
+                .apply{
+                    if (isSending) {
+                        this.localLSTracks(localLSTracks)
+                    }
+                }
                 .meta(mapOf("connect_meta" to "android"))
                 .sending(SendingOption(
                         SendingVideoOption.Builder()
                                 .videoCodecType(SendingVideoOption.VideoCodecType.H264)
                                 .sendingPriority(SendingVideoOption.SendingPriority.HIGH)
                                 .maxBitrateKbps(videoBitrate)
-                                .build()))
+                                .build(), isSending))
+                .receiving(ReceivingOption(isReceiving))
                 .iceServersProtocol(Config.getIceServersProtocol())
                 .build()
 
@@ -418,6 +453,9 @@ class BidirActivity : AppCompatActivity() {
                 mActivityBidirBinding.connectButton.text = getString(R.string.connecting)
                 mActivityBidirBinding.cameraListSpinner.isEnabled = false
                 mActivityBidirBinding.audioListSpinner.isEnabled = false
+                mActivityBidirBinding.sendRecv.isEnabled = false
+                mActivityBidirBinding.sendOnly.isEnabled = false
+                mActivityBidirBinding.recvOnly.isEnabled = false
             }
         }
 
@@ -453,7 +491,7 @@ class BidirActivity : AppCompatActivity() {
             runOnUiThread {
                 mActivityBidirBinding.connectButton.text = getString(R.string.disconnect)
                 mActivityBidirBinding.connectButton.isEnabled = true
-                mHandler.postDelayed(Runnable {
+                mHandler.postDelayed({
                     mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
                     mActivityBidirBinding.controlsLayout.visibility = View.GONE
                 }, 3000)
@@ -500,6 +538,9 @@ class BidirActivity : AppCompatActivity() {
                 mActivityBidirBinding.connectButton.isEnabled = true
                 mActivityBidirBinding.cameraListSpinner.isEnabled = true
                 mActivityBidirBinding.audioListSpinner.isEnabled = true
+                mActivityBidirBinding.sendRecv.isEnabled = true
+                mActivityBidirBinding.sendOnly.isEnabled = true
+                mActivityBidirBinding.recvOnly.isEnabled = true
                 mViewLayoutManager!!.clear()
             }
         }

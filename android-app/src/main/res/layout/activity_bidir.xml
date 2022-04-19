@@ -41,11 +41,13 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="text"
-            android:text="RoomId"
+            android:text="@string/roomid"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/audio_list_spinner"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:autofillHints=""
+            tools:ignore="LabelFor" />
 
         <!-- Mic Mute -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -184,6 +186,94 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/cap_spinner"
             app:layout_constraintTop_toBottomOf="@id/layout_mic_mute_id" />
+
+        <!-- Video Bitrate -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_video_bitrate_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_video_mute_id">
+
+            <TextView
+                android:id="@+id/video_bitrate_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/video_send_bitrate"
+                android:layout_marginTop="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/video_bitrate_spinner"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/video_bitrate_spinner"
+                android:layout_width="240dp"
+                android:layout_height="48dp"
+                android:entries="@array/spinner_bitrate"
+                android:spinnerMode="dropdown"
+                app:layout_constraintHorizontal_weight="0.2"
+                app:layout_constraintStart_toEndOf="@id/video_bitrate_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Send Receive Mode -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_send_recv_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_video_bitrate_id">
+
+            <TextView
+                android:id="@+id/text_send_recv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mode"
+                android:layout_marginTop="6dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/send_recv_radio"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <RadioGroup
+                android:id="@+id/send_recv_radio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toEndOf="@id/text_send_recv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread_inside">
+
+                <RadioButton
+                    android:id="@+id/send_recv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:checked="true"
+                    android:text="@string/sendreceive" />
+
+                <RadioButton
+                    android:id="@+id/send_only"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/sendonly" />
+
+                <RadioButton
+                    android:id="@+id/recv_only"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/receiveonly" />
+            </RadioGroup>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

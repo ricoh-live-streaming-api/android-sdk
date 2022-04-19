@@ -36,4 +36,10 @@
     <string name="tls">TLS</string>
     <string name="running">Running</string>
     <string name="video_receive">Video Receive</string>
+    <string name="video_send_bitrate">Video Send Bitrate:</string>
+    <string name="mode">Mode</string>
+    <string name="sendreceive">SendReceive</string>
+    <string name="sendonly">SendOnly</string>
+    <string name="receiveonly">ReceiveOnly</string>
+    <string name="roomid">RoomId</string>
 </resources>

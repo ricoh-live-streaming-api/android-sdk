@@ -11,7 +11,4 @@ pluginManagement {
 
 
 include(":android-app")
-include(":theta-plugin")
-include(":setting-app")
-include(":wearable-glass")
 

@@ -19,7 +19,4 @@ At this moment, we provide API license agreement / software license agreement on
 
 * [libs](libs) (ライブラリ本体)
 * [android-app](android-app) RICOH Live Streaming API の Android スマートフォン向けサンプル
-* [theta-plugin](theta-plugin) RICOH Live Streaming API の THETA プラグインサンプル (配信専用)
-* [unity-app](unity-app) RICOH Live Streaming API の Unity Android 向けサンプル
-* [wearable-glass](wearable-glass) RICOH Live Streaming API の ウェアラブルグラス向けサンプル
-* [setting-app](setting-app) wearable-glass アプリ用のQRコードを作成するアプリ
+* [theta-plugin](https://github.com/R0024-mmg/cappella-android-samples) RICOH Live Streaming API の THETA プラグインサンプル (配信専用) はこちら
