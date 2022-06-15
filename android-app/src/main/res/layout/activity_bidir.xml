@@ -62,7 +62,7 @@
                 android:id="@+id/text_mic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/mic"
+                android:text="@string/audio"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -107,19 +107,31 @@
             android:layout_height="48dp"
             android:spinnerMode="dropdown"
             app:layout_constraintHorizontal_weight="0.3"
-            app:layout_constraintEnd_toStartOf="@+id/cap_spinner"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/resolution_spinner"
             app:layout_constraintTop_toBottomOf="@id/layout_mic_mute_id" />
 
         <Spinner
-            android:id="@+id/cap_spinner"
+            android:id="@+id/resolution_spinner"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:entries="@array/spinner_items"
+            android:entries="@array/spinner_resolution"
             android:spinnerMode="dropdown"
             app:layout_constraintHorizontal_weight="0.2"
-            app:layout_constraintEnd_toStartOf="@+id/connect_button"
             app:layout_constraintStart_toEndOf="@+id/camera_list_spinner"
+            app:layout_constraintEnd_toStartOf="@+id/connect_button"
+            app:layout_constraintTop_toBottomOf="@id/layout_mic_mute_id" />
+
+        <Button
+            android:id="@+id/connect_button"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/connect"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/resolution_spinner"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_mic_mute_id" />
 
         <!-- Video Mute -->
@@ -175,18 +187,6 @@
             </RadioGroup>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/connect_button"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/connect"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/cap_spinner"
-            app:layout_constraintTop_toBottomOf="@id/layout_mic_mute_id" />
-
         <!-- Video Bitrate -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_video_bitrate_id"
@@ -209,12 +209,67 @@
 
             <Spinner
                 android:id="@+id/video_bitrate_spinner"
-                android:layout_width="240dp"
+                android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:entries="@array/spinner_bitrate"
                 android:spinnerMode="dropdown"
                 app:layout_constraintHorizontal_weight="0.2"
                 app:layout_constraintStart_toEndOf="@id/video_bitrate_label"
+                app:layout_constraintEnd_toStartOf="@id/video_bitrate_unit"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/video_bitrate_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/video_send_bitrate_unit"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintStart_toEndOf="@id/video_bitrate_spinner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Video Framerate -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_video_framerate_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_video_bitrate_id">
+
+            <TextView
+                android:id="@+id/video_framerate_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/video_send_framerate"
+                android:layout_marginTop="14dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/video_framerate_spinner"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/video_framerate_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:entries="@array/spinner_framerate"
+                android:spinnerMode="dropdown"
+                app:layout_constraintHorizontal_weight="0.2"
+                app:layout_constraintStart_toEndOf="@id/video_framerate_label"
+                app:layout_constraintEnd_toStartOf="@id/video_framerate_unit"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/video_framerate_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/video_send_framerate_unit"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintStart_toEndOf="@id/video_framerate_spinner"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -228,7 +283,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_video_bitrate_id">
+            app:layout_constraintTop_toBottomOf="@id/layout_video_framerate_id">
 
             <TextView
                 android:id="@+id/text_send_recv"

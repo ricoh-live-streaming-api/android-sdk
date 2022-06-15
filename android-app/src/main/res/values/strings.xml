@@ -25,7 +25,7 @@
     <string name="mute_type">MuteType</string>
     <string name="soft_mute">softmute</string>
     <string name="hard_mute">hardmute</string>
-    <string name="mic">Mic</string>
+    <string name="audio">Audio</string>
     <string name="video">Video</string>
     <string name="mute">mute</string>
     <string name="unmute">unmute</string>
@@ -37,6 +37,9 @@
     <string name="running">Running</string>
     <string name="video_receive">Video Receive</string>
     <string name="video_send_bitrate">Video Send Bitrate:</string>
+    <string name="video_send_bitrate_unit">kbps</string>
+    <string name="video_send_framerate">Video Send Framerate:</string>
+    <string name="video_send_framerate_unit">fps</string>
     <string name="mode">Mode</string>
     <string name="sendreceive">SendReceive</string>
     <string name="sendonly">SendOnly</string>

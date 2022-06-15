@@ -139,7 +139,7 @@ class BidirActivity : AppCompatActivity() {
 
                     val capWidth: Int
                     val capHeight: Int
-                    if ((mActivityBidirBinding.capSpinner.selectedItem) == "4K") {
+                    if ((mActivityBidirBinding.resolutionSpinner.selectedItem) == "4K") {
                         capWidth = 3840
                         capHeight = 2160
                     } else {
@@ -282,6 +282,30 @@ class BidirActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // video framerate
+        mActivityBidirBinding.videoFramerateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // nothing to do.
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val framerate = mActivityBidirBinding.videoFramerateSpinner.selectedItem.toString().toInt()
+                LOGGER.info("onItemSelected: Framerate=$framerate")
+
+                if (mClient?.state == Client.State.OPEN) {
+                    if (localLSTracks.find { it.mediaStreamTrack is VideoTrack } == null) {
+                        LOGGER.info("Not found video track")
+                        return
+                    }
+                    try {
+                        mClient!!.changeVideoSendFramerate(framerate)
+                    } catch (e: SDKError) {
+                        LOGGER.error("Failed to change video framerate.{}", e.toReportString())
+                    }
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -310,21 +334,19 @@ class BidirActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
-
     private fun connect() = executor.safeSubmit {
         val roomId = mActivityBidirBinding.roomId.text.toString()
 
         val capWidth: Int
         val capHeight: Int
-        var videoBitrate = mActivityBidirBinding.videoBitrateSpinner.selectedItem.toString().toInt()
+        val videoBitrate = getMaxBitrate()
 
-        if ((mActivityBidirBinding.capSpinner.selectedItem) == "4K") {
+        if ((mActivityBidirBinding.resolutionSpinner.selectedItem) == "4K") {
             capWidth = 3840
             capHeight = 2160
         } else {
             capWidth = 1920
             capHeight = 1080
-            videoBitrate /= 4
         }
 
         LOGGER.info("Try to connect. RoomType={}", Config.getRoomType())
@@ -423,6 +445,16 @@ class BidirActivity : AppCompatActivity() {
                 BuildConfig.CLIENT_ID,
                 accessToken,
                 option)
+    }
+
+    private fun getMaxBitrate(): Int {
+        return mActivityBidirBinding.videoBitrateSpinner.adapter.let {
+            var maxBitrate = it.getItem(0).toString().toInt()
+            for (i in 0 until it.count) {
+                maxBitrate = maxOf(maxBitrate, it.getItem(i).toString().toInt())
+            }
+            maxBitrate
+        }
     }
 
     private fun disconnect() = executor.safeSubmit {

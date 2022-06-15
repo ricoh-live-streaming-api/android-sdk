@@ -1,12 +1,26 @@
 # CHANGELOG
+## v1.7.0
+* API変更
+  * THETA Xに対応
+  * 送信映像フレームレートを送信中に変更できる`Client#changeVideoSendFramerate(int maxFramerate)`を追加
+  * [Deprecated] `ThetaVideoEncoderFactory#setTargetBitrate(int targetBitrate)`の非推奨対応に伴う移行ガイドを追加 [移行ガイド参照](./Guide.md#v160 "移行ガイド")
+  * (2022/06/29より本番環境で利用可能になりました)ConnectOptionのsending.enabledでクライアントの送信機能を無効にできるようにした。同一Room中に大量に送信機能が有効なクライアントが存在する場合、クライアントに大きな処理負荷や遅延が発生してしまうが、このオプションで低減することができる 
+* SDK修正
+  * P2P、P2P/TURN時に`ThetaVideoEncoderFactory`のコンストラクタで渡されたサポートコーデック以外がコーデックとして選択されてしまう不具合を修正
+  * P2P、P2P/TURN時の`Client#changeVideoSendBitrate(int maxBitrateKbps)`で指定したビットレートに制御できない不具合を修正
+* サンプルアプリ修正
+  * Connect時の`maxBitrateKbps`をbitrate選択スピナーの値の最大値で設定するように修正 (android-app)
+  * THETAプラグインサンプルをTHETA Xでも動くように修正 (https://github.com/ricoh-live-streaming-api/android-sdk-samples/tree/main/android-device-samples/theta-plugin)
+
 ## v1.6.0
 * API変更
   * changeVideoSendBitrateで接続中に映像送信ビットレートを変更できるようにした
   * (dev環境のみ提供のβ機能)ConnectOptionのsending.enabledでクライアントの送信機能を無効にできるようにした。同一Room中に大量に送信機能が有効なクライアントが存在する場合、クライアントに大きな処理負荷や遅延が発生してしまうが、このオプションで低減することができる
   * CodecUtils#getSupportedEncoderCodecInfoでシステムでサポートしているエンコーダのコーデックを取得できるようにした
   * CodecUtils#getSupportedDecoderCodecInfoでシステムでサポートしているデコーダのコーデックを取得できるようにした
+  * [Deprecated] `ThetaVideoEncoderFactory#setTargetBitrate(int targetBitrate)`を非推奨に変更 [移行ガイド参照](./Guide.md#v160 "移行ガイド")
 * SDK修正
-  * Unity向けaarとAndroid Native向けaarを統合 
+  * Unity向けaarとAndroid Native向けaarを統合
   * 規定時間内にIceConnectionが接続確立しなかった場合にIceConnectionTimeoutエラーを通知
   * closing/closed状態で発生するInternalErrorをListenerへ通知しないように修正
   * WebSocket切断検知のためにWebSocketコネクションタイムアウト45秒を設定
