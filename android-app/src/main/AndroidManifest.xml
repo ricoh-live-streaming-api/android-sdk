@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ricoh.livestreaming.app">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:name=".InitApplication"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".BidirActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:label="@string/bidir_activity_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".RecvActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:label="@string/recv_activity_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FileSenderActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:label="@string/file_sender_activity_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".UvcCameraActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:label="@string/uvc_camera_activity_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ScreenShareActivity"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:label="@string/screen_share_activity_name"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <service
+            android:name=".MediaProjectionService"
+            android:foregroundServiceType="mediaProjection"
+            android:stopWithTask="true"
+            android:exported="false" />
+    </application>
+
+</manifest>
