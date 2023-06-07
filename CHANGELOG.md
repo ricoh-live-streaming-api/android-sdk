@@ -1,4 +1,9 @@
 # CHANGELOG
+## v2.1.2
+* SDK 修正
+  * H.264 の映像受信時に解像度が変更されるとフレームレートが低下し続けることがある問題を修正しました
+  * THETA X でカメラのつなぎ目の部分が粗くなる問題を修正しました
+
 ## v2.1.1
 * SDK 修正
   * Client.Listener#onClosed() コールバック内で Camera2Capturer#stop() を呼び出すとクラッシュすることがある問題を修正しました
@@ -6,7 +11,7 @@
 ## v2.1.0
 * API 変更
   * [connect メソッドの option.proxy.url で Web プロキシサーバの URL が指定できる](https://api.livestreaming.ricoh/docs/clientsdk-api-external-specification/#proxyoption)ようになりました。Client の通信が指定された Web プロキシサーバを通過するようになります
-  * [libwebrtc のログをファイルに出力するメソッド setLibWebrtcLogOption を追加](https://api.livestreaming.ricoh/docs/clientsdk-api-external-specification/#setlibwebrtcclogoption)しました
+  * [libwebrtc のログをファイルに出力するメソッド setLibWebrtcLogOption を追加](https://api.livestreaming.ricoh/docs/clientsdk-api-external-specification/#setlibwebrtclogoption)しました
   * [Camera2VideoCapturer に getCameraCharacteristics と setCameraCustomParameters を追加](https://github.com/ricoh-live-streaming-api/android-sdk/tree/main/doc)しました
 * SDK 修正
   * libwebrtc を m107 に更新しました
@@ -26,7 +31,7 @@
 
 ## v2.0.0
 * API変更
-  * 破壊的変更 Listenerが実装を要求するコールバックメソッドの引数を1つに統一 
+  * 破壊的変更 Listenerが実装を要求するコールバックメソッドの引数を1つに統一
     * 変更に伴う[移行ガイド](./Guide.md)を追加
     * 今後コールバックが渡す情報が追加される場合、引数のオブジェクトの属性が増えることになる
   * onOpenのコールバック属性にAccessTokenのclaimのJSON文字列を追加
@@ -60,7 +65,7 @@
   * THETA Xに対応
   * 送信映像フレームレートを送信中に変更できる`Client#changeVideoSendFramerate(int maxFramerate)`を追加
   * [Deprecated] `ThetaVideoEncoderFactory#setTargetBitrate(int targetBitrate)`の非推奨対応に伴う移行ガイドを追加 [移行ガイド参照](./Guide.md#v160 "移行ガイド")
-  * (2022/06/29より本番環境で利用可能になりました)ConnectOptionのsending.enabledでクライアントの送信機能を無効にできるようにした。同一Room中に大量に送信機能が有効なクライアントが存在する場合、クライアントに大きな処理負荷や遅延が発生してしまうが、このオプションで低減することができる 
+  * (2022/06/29より本番環境で利用可能になりました)ConnectOptionのsending.enabledでクライアントの送信機能を無効にできるようにした。同一Room中に大量に送信機能が有効なクライアントが存在する場合、クライアントに大きな処理負荷や遅延が発生してしまうが、このオプションで低減することができる
 * SDK修正
   * P2P、P2P/TURN時に`ThetaVideoEncoderFactory`のコンストラクタで渡されたサポートコーデック以外がコーデックとして選択されてしまう不具合を修正
   * P2P、P2P/TURN時の`Client#changeVideoSendBitrate(int maxBitrateKbps)`で指定したビットレートに制御できない不具合を修正
@@ -107,7 +112,7 @@
   * OptionのiceServersProtocolでTURNサーバに接続する際にどのトランスポートプロトコルで接続するか指定できるようにした。この属性で"tls"を指定してTCP443ポートの強制が可能になり、他のトランスポートプロトコルを使ってパフォーマンス最適化する余地を犠牲にして、ファイヤーウォールやプロキシを通過する確率を上げることができる
 * SDK修正
   * 特定のタイミングでchangeMute、updateTrackMetaを実行した場合に対向connectionに内容が通知されない不具合を修正
-  * 要求されたRoomSpecに対応するSFUまたはTURNが一時的にクラウド上に存在しない場合に専用のエラーコード53806を追加 
+  * 要求されたRoomSpecに対応するSFUまたはTURNが一時的にクラウド上に存在しない場合に専用のエラーコード53806を追加
   * 初期化処理時にハードウェアでサポートしているコーデック一覧をログ出力するように修正
   * VP8/VP9指定時でハードウェアコーデックがない場合にソフトウェアコーデックを使用するように修正
   * open状態以外で処理できないイベントハンドラでInternalErrorにならないように修正
@@ -115,7 +120,7 @@
   * android-app
     * ScreenShareActivityを追加
   * theta-plugin
-    * オーディオミュート機能を追加 
+    * オーディオミュート機能を追加
     * jcenterからmavenCentralへの移行のためにTHETA Web Apiを呼び出すように修正してtheta4jライブラリ依存を解消
   * wearable-glass
     * オーディオミュート機能を追加
