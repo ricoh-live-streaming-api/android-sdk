@@ -4,17 +4,18 @@
 
 package com.ricoh.livestreaming.app
 
+import android.app.Dialog
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
+import android.widget.*
+import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
 import com.ricoh.livestreaming.app.databinding.ActivityUvcCameraBinding
 import com.ricoh.livestreaming.theta.ThetaVideoEncoderFactory
-import com.ricoh.livestreaming.uvc.UvcVideoCapturer
+import com.ricoh.livestreaming.uvc.*
 import com.ricoh.livestreaming.webrtc.CodecUtils
 import org.slf4j.LoggerFactory
 import org.webrtc.*
@@ -27,6 +28,125 @@ class UvcCameraActivity : AppCompatActivity() {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(UvcCameraActivity::class.java)
         private val LOCK = Object()
+
+        private enum class UvcControlDialogInfo(
+            val controlId: UvcControlId,
+            val autoControlId: UvcControlId?,
+            val layoutResourceId: Int,
+            val labelResourceId: Int?,
+            val valueResourceId: Int?,
+            val seekBarResourceId: Int?,
+            val autoResourceId: Int?
+        ) {
+            BACKLIGHT_COMPENSATION(
+                ProcessingUnitUvcControlId.BACKLIGHT_COMPENSATION,
+                null,
+                R.id.backlight_compensation_layout,
+                R.id.textView_label_backlight_compensation,
+                R.id.textView_value_backlight_compensation,
+                R.id.seekBar_backlight_compensation,
+                null
+            ),
+            BRIGHTNESS(
+                ProcessingUnitUvcControlId.BRIGHTNESS,
+                null,
+                R.id.brightness_layout,
+                R.id.textView_label_brightness,
+                R.id.textView_value_brightness,
+                R.id.seekBar_brightness,
+                null
+            ),
+            CONTRAST(
+                ProcessingUnitUvcControlId.CONTRAST,
+                null,
+                R.id.contrast_layout,
+                R.id.textView_label_contrast,
+                R.id.textView_value_contrast,
+                R.id.seekBar_contrast,
+                null
+            ),
+            SATURATION(
+                ProcessingUnitUvcControlId.SATURATION,
+                null,
+                R.id.saturation_layout,
+                R.id.textView_label_saturation,
+                R.id.textView_value_saturation,
+                R.id.seekBar_saturation,
+                null
+            ),
+            SHARPNESS(
+                ProcessingUnitUvcControlId.SHARPNESS,
+                null,
+                R.id.sharpness_layout,
+                R.id.textView_label_sharpness,
+                R.id.textView_value_sharpness,
+                R.id.seekBar_sharpness,
+                null
+            ),
+            GAMMA(
+                ProcessingUnitUvcControlId.GAMMA,
+                null,
+                R.id.gamma_layout,
+                R.id.textView_label_gamma,
+                R.id.textView_value_gamma,
+                R.id.seekBar_gamma,
+                null
+            ),
+            GAIN(
+                ProcessingUnitUvcControlId.GAIN,
+                null,
+                R.id.gain_layout,
+                R.id.textView_label_gain,
+                R.id.textView_value_gain,
+                R.id.seekBar_gain,
+                null
+            ),
+            HUE(
+                ProcessingUnitUvcControlId.HUE,
+                ProcessingUnitUvcControlId.HUE_AUTO,
+                R.id.hue_layout,
+                R.id.textView_label_hue,
+                R.id.textView_value_hue,
+                R.id.seekBar_hue,
+                R.id.checkBox_hue_auto
+            ),
+            WHITE_BALANCE_TEMPERATURE(
+                ProcessingUnitUvcControlId.WHITE_BALANCE_TEMPERATURE,
+                ProcessingUnitUvcControlId.WHITE_BALANCE_TEMPERATURE_AUTO,
+                R.id.whitebalancetemparature_layout,
+                R.id.textView_label_whitebalancetemparature,
+                R.id.textView_value_whitebalancetemparature,
+                R.id.seekBar_whitebalancetemparature,
+                R.id.checkBox_whitebalancetemparature_auto
+            ),
+            ZOOM_ABSOLUTE(
+                CameraTerminalUvcControlId.ZOOM_ABSOLUTE,
+                null,
+                R.id.zoom_layout,
+                R.id.textView_label_zoom,
+                R.id.textView_value_zoom,
+                R.id.seekBar_zoom,
+                null
+            ),
+            FOCUS_ABSOLUTE(
+                CameraTerminalUvcControlId.FOCUS_ABSOLUTE,
+                CameraTerminalUvcControlId.FOCUS_AUTO,
+                R.id.focus_layout,
+                R.id.textView_label_focus,
+                R.id.textView_value_focus,
+                R.id.seekBar_focus,
+                R.id.checkBox_focus_auto
+            ),
+            POWER_LINE_FREQUENCY(
+                ProcessingUnitUvcControlId.POWER_LINE_FREQUENCY,
+                null,
+                R.id.powerlinefrequency_layout,
+                R.id.textView_label_powerlinefrequency,
+                null,
+                null,
+                null
+            )
+        }
     }
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -104,6 +224,10 @@ class UvcCameraActivity : AppCompatActivity() {
         mAdapter = UvcFormatListAdapter(this)
         mActivityUvcCameraBinding.capSpinner.adapter = mAdapter
         mActivityUvcCameraBinding.capSpinner.isEnabled = true
+
+        mActivityUvcCameraBinding.cameraSettingButton.setOnClickListener {
+            showCameraControlDialog()
+        }
     }
 
     override fun onDestroy() {
@@ -208,6 +332,258 @@ class UvcCameraActivity : AppCompatActivity() {
         mViewLayoutManager!!.onConfigurationChanged()
     }
 
+    private fun showCameraControlDialog() {
+        mVideoCapturer?.let { capturer ->
+            val dialog = Dialog(this).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setContentView(R.layout.camera_control_dialog)
+                window?.let {
+                    it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                    it.attributes.gravity = Gravity.TOP or Gravity.START
+                }
+                findViewById<Button>(R.id.button_close)?.setOnClickListener {
+                    dismiss()
+                }
+                findViewById<Button>(R.id.button_default)?.setOnClickListener {
+                    mVideoCapturer?.let { capturer ->
+                        try {
+                            resetUvcControls()
+                            updateUvcControls(this, capturer)
+                        } catch (e: Exception) {
+                            LOGGER.error("Failed to reset controls", e)
+                        }
+                    }
+                }
+
+                updateUvcControls(this, capturer)
+            }
+            dialog.show()
+        }
+    }
+
+    private fun updateUvcControls(dialog: Dialog, capturer: UvcVideoCapturer) {
+        for (info in UvcControlDialogInfo.values()) {
+            try {
+                applyUvcControl(dialog, info, capturer)
+            } catch (e: Exception) {
+                LOGGER.error("Failed to applyUvcControl()", e)
+            }
+        }
+    }
+
+    private fun applyUvcControl(dialog: Dialog, info: UvcControlDialogInfo, capturer: UvcVideoCapturer) {
+        LOGGER.info("applyUvcControl(controlId={})", info.controlId)
+        val layout = dialog.findViewById<LinearLayout>(info.layoutResourceId)
+        val labelText = if (info.labelResourceId != null) {
+            dialog.findViewById<TextView>(info.labelResourceId)
+        } else {
+            null
+        }
+
+        val control = capturer.getControl(info.controlId)
+        if (control == null) {
+            LOGGER.info("{} is not supported.", info.controlId)
+            layout.visibility = View.GONE
+        } else {
+            layout.visibility = View.VISIBLE
+
+            if (info == UvcControlDialogInfo.POWER_LINE_FREQUENCY) {
+                val radioGroupFreq = dialog.findViewById<RadioGroup>(R.id.radioGroup_powerlinefrequency)
+                if (control.isSetCurrentValueSupported &&
+                    control.isGetCurrentValueSupported &&
+                    !control.isAutoUpdate) {
+                    control.receiveCurrentValue()
+
+                    when (control.currentValue.toInt()) {
+                        0 -> radioGroupFreq.check(R.id.radioButton_freq_disabled)
+                        1 -> radioGroupFreq.check(R.id.radioButton_freq_50hz)
+                        2 -> radioGroupFreq.check(R.id.radioButton_freq_60hz)
+                    }
+                    radioGroupFreq
+                        .setOnCheckedChangeListener { _, checkedId ->
+                            var c = 0
+                            when (checkedId) {
+                                R.id.radioButton_freq_disabled -> c = 0
+                                R.id.radioButton_freq_50hz -> c = 1
+                                R.id.radioButton_freq_60hz -> c = 2
+                            }
+                            try {
+                                control.sendCurrentValue(c.toLong())
+                            } catch (e: Exception) {
+                                LOGGER.error("Failed to sendCurrentValue()", e)
+                            }
+                        }
+
+                } else {
+                    labelText?.isEnabled = false
+                    radioGroupFreq.isEnabled = false
+                }
+            } else {
+                val valueText = if (info.valueResourceId != null) {
+                    dialog.findViewById<TextView>(info.valueResourceId)
+                } else {
+                    null
+                }
+                val autoCheckBox = if (info.autoResourceId != null) {
+                    dialog.findViewById<CheckBox>(info.autoResourceId)
+                } else {
+                    null
+                }
+                val seekBar = if (info.seekBarResourceId != null) {
+                    dialog.findViewById<SeekBar>(info.seekBarResourceId)
+                } else {
+                    null
+                }
+
+                val autoControl = if (info.autoControlId != null) {
+                    capturer.getControl(info.autoControlId)
+                } else {
+                    null
+                }
+                autoControl?.receiveCurrentValue()
+
+                if (seekBar != null) {
+                    seekBar.max = (control.maxValue - control.minValue).toInt()
+                    if ((autoControl == null && control.isAutoUpdate) ||
+                        (autoControl != null && autoControl.currentValue != 0L)
+                    ) {
+                        seekBar.isEnabled = false
+                        seekBar.progress = 0
+                        if (autoControl == null) {
+                            labelText?.isEnabled = false
+                        }
+                        valueText?.setText(R.string.value_auto)
+                    } else if (!control.isSetCurrentValueSupported) {
+                        seekBar.isEnabled = false
+                        if (control.isGetCurrentValueSupported) {
+                            seekBar.progress = ctrlToSeek(control)
+                            // Read Only
+                            labelText?.isEnabled = false
+                            valueText?.setText(R.string.value_readonly)
+                        } else {
+                            seekBar.progress = 0
+                            // Invisible
+                            labelText?.isEnabled = false
+                            valueText?.setText(R.string.value_invisible)
+                        }
+                    } else if (!control.isGetCurrentValueSupported) {
+                        seekBar.progress = 0
+                        // Invisible
+                        labelText?.isEnabled = false
+                        valueText?.setText(R.string.value_invisible)
+                    } else {
+                        seekBar.isEnabled = true
+                        control.receiveCurrentValue()
+                        seekBar.progress = ctrlToSeek(control)
+                        valueText?.also { textView ->
+                            textView.text = getString(R.string.control_value, control.currentValue)
+                            seekBar.setOnSeekBarChangeListener(
+                                UvcSeekBarChangeListener(
+                                    control,
+                                    valueText
+                                )
+                            )
+                        }
+                    }
+                }
+
+                autoCheckBox?.let { checkBox ->
+                    if (autoControl != null &&
+                        autoControl.isSetCurrentValueSupported &&
+                        autoControl.isGetCurrentValueSupported
+                    ) {
+                        checkBox.isEnabled = true
+                        checkBox.isChecked = autoControl.currentValue != 0L
+                        checkBox.setOnClickListener {
+                            try {
+                                autoControl.sendCurrentValue(if (checkBox.isChecked) 1 else 0.toLong())
+                                applyUvcControl(dialog, info, capturer)
+                            } catch (e: Exception) {
+                                LOGGER.error("Failed to sendCurrentValue()", e)
+                            }
+                        }
+                    } else {
+                        checkBox.isEnabled = false
+                        if (autoControl != null) {
+                            checkBox.isChecked = autoControl.currentValue != 0L
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun seekToCtrl(ctrl: UvcControl, v: Long): Long {
+        return v / ctrl.resolution * ctrl.resolution + ctrl.minValue
+    }
+
+    private fun ctrlToSeek(ctrl: UvcControl): Int {
+        return (ctrl.currentValue - ctrl.minValue).toInt()
+    }
+
+    private inner class UvcSeekBarChangeListener constructor(
+        ctrl: UvcControl,
+        tv: TextView
+    ) :
+        OnSeekBarChangeListener {
+        private val ctrl: UvcControl
+        private val tv: TextView
+
+        init {
+            this.ctrl = ctrl
+            this.tv = tv
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar) {}
+        override fun onStartTrackingTouch(seekBar: SeekBar) {}
+        override fun onProgressChanged(
+            seekBar: SeekBar, progress: Int,
+            fromUser: Boolean
+        ) {
+            if (!fromUser) {
+                return
+            }
+            val c: Long = seekToCtrl(ctrl, progress.toLong())
+            if (c != ctrl.currentValue) {
+                try {
+                    ctrl.sendCurrentValue(c)
+                } catch (e: Exception) {
+                    LOGGER.error("Failed to sendCurrentValue.", e)
+                    return
+                }
+                seekBar.progress = ctrlToSeek(ctrl)
+                tv.text = getString(R.string.control_value, ctrl.currentValue)
+            }
+        }
+    }
+
+    private fun resetUvcControls() {
+        mVideoCapturer?.let { capturer ->
+            for (info in UvcControlDialogInfo.values()) {
+                val control = capturer.getControl(info.controlId)
+                val autoControl = if (info.autoControlId != null) {
+                    capturer.getControl(info.autoControlId)
+                } else {
+                    null
+                }
+
+                if (control != null) {
+                    autoControl?.receiveCurrentValue()
+
+                    if (control.isSetCurrentValueSupported &&
+                        !control.isDisabledDueToAutomaticMode ||
+                        (autoControl != null && autoControl.currentValue == 0L)) {
+                        control.sendCurrentValue(control.defaultValue)
+                    }
+                }
+
+                if (autoControl != null && autoControl.isSetCurrentValueSupported) {
+                    autoControl.sendCurrentValue(autoControl.defaultValue)
+                }
+            }
+        }
+    }
+
     inner class ClientListener : Client.Listener {
 
         override fun onConnecting(event: LSConnectingEvent) {
@@ -252,6 +628,7 @@ class UvcCameraActivity : AppCompatActivity() {
             runOnUiThread {
                 mActivityUvcCameraBinding.connectButton.text = getString(R.string.disconnect)
                 mActivityUvcCameraBinding.connectButton.isEnabled = true
+                mActivityUvcCameraBinding.cameraSettingButton.visibility = View.VISIBLE
                 mHandler.postDelayed({
                     mActivityUvcCameraBinding.controlsLayout.visibility = View.GONE
                 }, 3000)
@@ -300,6 +677,7 @@ class UvcCameraActivity : AppCompatActivity() {
                 mActivityUvcCameraBinding.connectButton.text = getString(R.string.connect)
                 mActivityUvcCameraBinding.connectButton.isEnabled = true
                 mActivityUvcCameraBinding.capSpinner.isEnabled = true
+                mActivityUvcCameraBinding.cameraSettingButton.visibility = View.GONE
                 mViewLayoutManager!!.clear()
             }
         }
@@ -403,6 +781,12 @@ class UvcCameraActivity : AppCompatActivity() {
 
         override fun onDeviceDetached() {
             LOGGER.debug("UvcVideoCapturerListener#onDeviceDetached()")
+            runOnUiThread {
+                mCameraFormats.clear()
+                mAdapter!!.clear()
+
+                mActivityUvcCameraBinding.connectButton.isEnabled = false
+            }
         }
     }
 

@@ -1,5 +1,51 @@
 # 移行ガイド
 
+## v3.0.0
+* v3.0.0 より THETA Z1 / X における静止画撮影時の天頂補正機能追加により変更がありますので、下記の通り対応をお願いします
+  * THETA Z1 / X 共通変更
+    * `Theta(X)CameraCapturer#takePicture()` 実行時に引数で天頂補正を行うかどうかを指定するようになりました
+      ```kotlin
+      capturer.takePicture(options: TakePictureOptions, callback: Consumer<ByteArray!>)
+      ```
+    * 引数について
+      * `options`
+        * `TakePictureOptions` インスタンスです。v3.0.0 では以下の `zenithCorrectionEnabled` のみ設定できます
+          * `zenithCorrectionEnabled`
+            * `true`
+              * 静止画撮影にて天頂補正を行います
+            * `false`
+              * 静止画撮影にて天頂補正を行わないようにします
+      * `callback`
+        * 撮影したイメージデータを保存する処理を定義するコールバックです
+    * THETA Z1 で天頂補正を行う場合は、アプリにて `ThetaCameraCapturer#takePicture()` の実行前後に下記のコードの実装をお願いします。下記がない場合は正しく補正できないことがあります
+      * 実行前
+        * `notificationSensorStart()`
+      * 実行後
+        * `notificationSensorStop()`
+  * THETA X のみ変更
+    * `ThetaXCameraCapturer#takePicture()` の天頂補正機能追加に伴い、以下のメソッド名を変更いたしました。利用されている場合は移行をお願いします
+      * 旧
+        ```kotlin
+        thetaXCameraCapturer.setZenithCorrection(enable: Boolean)
+        ```
+      * 新
+        ```kotlin
+        thetaXCameraCapturer.setStreamingZenithCorrection(enable: Boolean)
+        ```
+* また、v3.0.0 より `infinitegra.usb.UsbException` が `com.ricoh.livestreaming.uvc.UsbException` に変更になりましたので、下記の通り移行をお願いします
+  * 旧
+    ```kotlin
+    try {
+      uvcVideoCapturer.getFormats()
+    } catch (e: infinitegra.usb.UsbException) {}
+    ```
+  * 新
+    ```kotlin
+    try {
+      uvcVideoCapturer.getFormats()
+    } catch (e: com.ricoh.livestreaming.uvc.UsbException) {}
+    ```
+
 ## v2.0.0
 * v2.0.0 より `Client#Listener` で定義している各種イベントハンドラの引数が変更になりましたので、下記の通り移行をお願いします
   * `Listener#onConnecting()`

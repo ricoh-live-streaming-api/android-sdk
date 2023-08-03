@@ -1,4 +1,16 @@
 # CHANGELOG
+## v3.0.0
+* API 変更
+  * USB 外付けカメラを UVC で制御する UvcControl クラスを追加しました
+    * UvcControl クラスは UvcVideoCapturer#getControl(UvcControlId uvcControlId)で取得できます
+    * UvcControlId は CameraTerminalUvcControlId と ProcessingUnitUvcControlId の enum から取得できます
+  * **破壊的変更** com.ricoh.livestreaming.uvc パッケージから throw される USB 関連の例外クラスを com.ricoh.livestreaming.uvc.UsbException に変更しました
+  * **破壊的変更** Theta(X)CameraCapturer#takePicture() の引数に TakePictureOptions を追加しました
+    * TakePictureOptions は zenithCorrectionEnabled のみが設定できます。静止画撮影時の天頂補正の有効無効が制御されます
+  * **破壊的変更** ThetaXCameraCapturer#setZenithCorrection() を ThetaXCameraCapturer#setStreamingZenithCorrection() に変更しました
+    * 静止画撮影ではなくストリーミングのみの天頂補正の制御であることを、明示するメソッド名にしました。挙動に変更はありません
+  * 破壊的変更の移行については[本変更に伴う移行ガイド](https://github.com/ricoh-live-streaming-api/android-sdk/blob/main/Guide.md#v300)を追加しましたので、ご確認ください
+
 ## v2.1.2
 * SDK 修正
   * H.264 の映像受信時に解像度が変更されるとフレームレートが低下し続けることがある問題を修正しました

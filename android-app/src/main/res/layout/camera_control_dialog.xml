@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        tools:ignore="RtlSymmetry">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/backlight_compensation_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_backlight_compensation"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_backlight_compensation"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_backlight_compensation"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_backlight_compensation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/brightness_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_brightness"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_brightness"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_brightness"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_brightness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contrast_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_contrast"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_contrast"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_contrast"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_contrast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/saturation_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_saturation"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_saturation"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_saturation"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_saturation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sharpness_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_sharpness"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_sharpness"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_sharpness"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_sharpness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/gamma_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_gamma"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_gamma"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_gamma"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_gamma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/gain_layout"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_gain"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_gain"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_gain"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_gain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/hue_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_hue"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_hue"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_hue"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_hue_auto"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/auto" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_hue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/whitebalancetemparature_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_whitebalancetemparature"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pu_whitebalancetemparature"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_whitebalancetemparature"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_whitebalancetemparature_auto"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/auto" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_whitebalancetemparature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/zoom_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_zoom"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ct_zoom"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_zoom"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_zoom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/focus_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/textView_label_focus"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ct_focus"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textView_value_focus"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero" />
+
+                <CheckBox
+                    android:id="@+id/checkBox_focus_auto"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/auto" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekBar_focus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/powerlinefrequency_layout"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textView_label_powerlinefrequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pu_powerlinefrequency"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup_powerlinefrequency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/radioButton_freq_disabled"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/disabled" />
+
+                <RadioButton
+                    android:id="@+id/radioButton_freq_50hz"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/freq_50hz" />
+
+                <RadioButton
+                    android:id="@+id/radioButton_freq_60hz"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/freq_60hz" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/button_close"
+                style="android:buttonBarStyle"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="@string/close" />
+
+            <Button
+                android:id="@+id/button_default"
+                style="android:buttonBarStyle"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:text="@string/rst_default" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
