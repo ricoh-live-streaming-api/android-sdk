@@ -23,8 +23,7 @@ class MainActivity : AppCompatActivity() {
         private const val PERMISSION_REQUEST_CODE = 1813480588
         private val REQUIRED_PERMISSIONS = listOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.RECORD_AUDIO
         )
     }
     

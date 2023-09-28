@@ -8,9 +8,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.1")
-        classpath(kotlin("gradle-plugin", "1.4.32"))
-        classpath("com.github.kezong:fat-aar:1.3.6")
+        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath(kotlin("gradle-plugin", "1.9.10"))
     }
 }
 

@@ -1,4 +1,14 @@
 # CHANGELOG
+
+## v3.0.1
+* 共通修正
+  * compileSdkVersion と targetSdkVersion を`31`から`33`に更新しました
+* サンプルアプリ修正
+  * 依存ライブラリバージョンを以下に更新しました。メジャーバージョンのアップデートを含みます
+    * org.slf4j:slf4j-api:2.0.7
+    * com.squareup.okhttp3:okhttp:4.11.0
+    * com.google.code.gson:gson:2.10.1
+
 ## v3.0.0
 * API 変更
   * USB 外付けカメラを UVC で制御する UvcControl クラスを追加しました

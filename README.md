@@ -22,6 +22,15 @@ At this moment, we provide API license agreement / software license agreement on
 * [android-app](android-app) RICOH Live Streaming API の Android スマートフォン向けサンプル
 * [theta-plugin](https://github.com/ricoh-live-streaming-api/android-sdk-samples/tree/main/android-device-samples/theta-plugin) RICOH Live Streaming API の THETA プラグインサンプル (配信専用) はこちら
 
+## 依存ライブラリ
+
+Client SDK は以下のライブラリを使用しています。
+
+* org.slf4j:slf4j-api:2.0.7
+* com.squareup.okhttp3:okhttp:4.11.0
+* com.google.code.gson:gson:2.10.1
+* com.theta360:pluginlibrary:3.2.0
+
 ## バージョンアップ時の更新方法
 
 client-sdk-{バージョン}.aar を差し替えてください
