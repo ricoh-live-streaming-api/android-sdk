@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v3.1.0
+* API 変更
+  * SDK が libwebrtc とは別に独自にネットワークの状況変化に応じて自動でビデオ解像度とフレームレートを変更するモードを変更する Client#changeAdaptiveSendingMode() を追加しました (β)
+    * AdaptiveSendingOption#mode を BALANCED にすると SDK がネットワークの状況変化に応じて自動でビデオ解像度とフレームレートを変更します
+      * 設定前に Client#setAdaptiveSendingCapturer() で Client に capturer を設定する必要があります
+  * TakePictureOptions に解像度を指定するオプションを追加しました
+    * JpegFileFormat の enum で指定できます
+    * デフォルト値および指定できる値は THETA の機種によって異なります
+* SDK 修正
+  * `ThetaXCameraCapturer#setStreamingZenithCorrection()` の設定が `ThetaXCameraCapturer#takePicture()` 後に解除されてしまう問題を修正しました
+
 ## v3.0.1
 * 共通修正
   * compileSdkVersion と targetSdkVersion を`31`から`33`に更新しました
