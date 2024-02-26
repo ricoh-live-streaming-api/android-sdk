@@ -59,6 +59,8 @@ class BidirActivity : AppCompatActivity() {
     /** View Binding */
     private lateinit var mActivityBidirBinding: ActivityBidirBinding
 
+    private var isVideoPaused = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -115,6 +117,19 @@ class BidirActivity : AppCompatActivity() {
                     LOGGER.error(e.toReportString())
                 }
             }
+        }
+
+        mActivityBidirBinding.pauseVideoButton.setOnClickListener {
+            val text = if (isVideoPaused) {
+                mVideoCapturer?.resumeVideo()
+                isVideoPaused = false
+                getString(R.string.pause_video)
+            } else {
+                mVideoCapturer?.pauseVideo()
+                isVideoPaused = true
+                getString(R.string.resume_video)
+            }
+            mActivityBidirBinding.pauseVideoButton.text = text
         }
 
         mActivityBidirBinding.roomId.setText(Config.getRoomId())
@@ -317,7 +332,7 @@ class BidirActivity : AppCompatActivity() {
         mActivityBidirBinding.proxyAuthentication.isEnabled = false
         mActivityBidirBinding.proxyUser.isEnabled = false
         mActivityBidirBinding.proxyPassword.isEnabled = false
-        mActivityBidirBinding.useProxy.setOnClickListener() {
+        mActivityBidirBinding.useProxy.setOnClickListener {
             if (mActivityBidirBinding.useProxy.isChecked) {
                 mActivityBidirBinding.proxyAddress.isEnabled = true
                 mActivityBidirBinding.proxyPort.isEnabled = true
@@ -334,7 +349,7 @@ class BidirActivity : AppCompatActivity() {
                 mActivityBidirBinding.proxyPassword.isEnabled = false
             }
         }
-        mActivityBidirBinding.proxyAuthentication.setOnClickListener() {
+        mActivityBidirBinding.proxyAuthentication.setOnClickListener {
             if (mActivityBidirBinding.proxyAuthentication.isChecked) {
                 mActivityBidirBinding.proxyUser.isEnabled = true
                 mActivityBidirBinding.proxyPassword.isEnabled = true
@@ -360,11 +375,13 @@ class BidirActivity : AppCompatActivity() {
                 mActivityBidirBinding.updateMetaLayout.visibility = View.VISIBLE
             }
             mActivityBidirBinding.controlsLayout.visibility = View.VISIBLE
+            mActivityBidirBinding.pauseVideoButton.visibility = View.VISIBLE
 
             mHandler.removeCallbacksAndMessages(null)
             mHandler.postDelayed({
                 mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
                 mActivityBidirBinding.controlsLayout.visibility = View.GONE
+                mActivityBidirBinding.pauseVideoButton.visibility = View.GONE
             }, 3000)
         }
 
@@ -570,7 +587,7 @@ class BidirActivity : AppCompatActivity() {
         }
 
         override fun onOpen(event: LSOpenEvent) {
-            LOGGER.debug("Client#onOpen(accessTokenJson = ${event.accessTokenJson})")
+            LOGGER.debug("Client#onOpen(accessTokenJson = ${event.accessTokenJson}, receiverExistence = ${event.connectionsStatus.video.receiverExistence})")
 
             // == For WebRTC Internal Tracing Capture.
             // == "/sdcard/{LOGS_DIR}/{date}T{time}.log.json" will be created.
@@ -604,7 +621,10 @@ class BidirActivity : AppCompatActivity() {
                 mHandler.postDelayed({
                     mActivityBidirBinding.updateMetaLayout.visibility = View.GONE
                     mActivityBidirBinding.controlsLayout.visibility = View.GONE
+                    mActivityBidirBinding.pauseVideoButton.visibility = View.GONE
                 }, 3000)
+                isVideoPaused = false
+                mActivityBidirBinding.pauseVideoButton.text = getString(R.string.pause_video)
             }
         }
 
@@ -619,6 +639,7 @@ class BidirActivity : AppCompatActivity() {
                 mActivityBidirBinding.connectButton.text = getString(R.string.disconnecting)
                 mActivityBidirBinding.cameraListSpinner.isEnabled = false
                 mActivityBidirBinding.audioListSpinner.isEnabled = false
+                mActivityBidirBinding.pauseVideoButton.visibility = View.GONE
             }
         }
 
@@ -724,6 +745,10 @@ class BidirActivity : AppCompatActivity() {
             for ((key, value) in event.meta) {
                 LOGGER.debug("metadata key=${key} : value=${value}")
             }
+        }
+
+        override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatusEvent) {
+            LOGGER.debug("Client#onUpdateConnectionsStatus receiver_existence = ${event.connectionsStatus.video.receiverExistence}")
         }
 
         override fun onUpdateMute(event: LSUpdateMuteEvent) {

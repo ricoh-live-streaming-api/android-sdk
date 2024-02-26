@@ -172,6 +172,8 @@ class UvcCameraActivity : AppCompatActivity() {
     /** View Binding */
     private lateinit var mActivityUvcCameraBinding: ActivityUvcCameraBinding
 
+    private var isVideoPaused = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -213,6 +215,19 @@ class UvcCameraActivity : AppCompatActivity() {
             }
         }
 
+        mActivityUvcCameraBinding.pauseVideoButton.setOnClickListener {
+            val text = if (isVideoPaused) {
+                mVideoCapturer?.resumeVideo()
+                isVideoPaused = false
+                getString(R.string.pause_video)
+            } else {
+                mVideoCapturer?.pauseVideo()
+                isVideoPaused = true
+                getString(R.string.resume_video)
+            }
+            mActivityUvcCameraBinding.pauseVideoButton.text = text
+        }
+
         mActivityUvcCameraBinding.roomId.setText(Config.getRoomId())
         mActivityUvcCameraBinding.connectButton.isEnabled = false
         mVideoCapturer = UvcVideoCapturer(applicationContext)
@@ -240,10 +255,12 @@ class UvcCameraActivity : AppCompatActivity() {
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (mClient?.state == Client.State.OPEN) {
             mActivityUvcCameraBinding.controlsLayout.visibility = View.VISIBLE
+            mActivityUvcCameraBinding.pauseVideoButton.visibility = View.VISIBLE
 
             mHandler.removeCallbacksAndMessages(null)
             mHandler.postDelayed({
                 mActivityUvcCameraBinding.controlsLayout.visibility = View.GONE
+                mActivityUvcCameraBinding.pauseVideoButton.visibility = View.GONE
             }, 3000)
         }
 
@@ -631,7 +648,10 @@ class UvcCameraActivity : AppCompatActivity() {
                 mActivityUvcCameraBinding.cameraSettingButton.visibility = View.VISIBLE
                 mHandler.postDelayed({
                     mActivityUvcCameraBinding.controlsLayout.visibility = View.GONE
+                    mActivityUvcCameraBinding.pauseVideoButton.visibility = View.GONE
                 }, 3000)
+                isVideoPaused = false
+                mActivityUvcCameraBinding.pauseVideoButton.text = getString(R.string.pause_video)
             }
         }
 
@@ -641,6 +661,7 @@ class UvcCameraActivity : AppCompatActivity() {
             runOnUiThread {
                 mActivityUvcCameraBinding.connectButton.isEnabled = false
                 mActivityUvcCameraBinding.connectButton.text = getString(R.string.disconnecting)
+                mActivityUvcCameraBinding.pauseVideoButton.visibility = View.GONE
             }
         }
 
@@ -746,6 +767,10 @@ class UvcCameraActivity : AppCompatActivity() {
             for ((key, value) in event.meta) {
                 LOGGER.debug("metadata key=${key} : value=${value}")
             }
+        }
+
+        override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatusEvent) {
+            LOGGER.debug("Client#onUpdateConnectionsStatus receiver_existence = ${event.connectionsStatus.video.receiverExistence}")
         }
 
         override fun onUpdateMute(event: LSUpdateMuteEvent) {

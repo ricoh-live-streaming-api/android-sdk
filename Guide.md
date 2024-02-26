@@ -1,5 +1,12 @@
 # 移行ガイド
 
+## v4.0.0
+* v4.0.0 より `Client#Listener` に新しく `onUpdateConnectionsStatus` イベントが新規追加となりましたので、下記の実装の追加対応をお願いします。
+  * 新
+    ```kotlin
+    override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatus) {}
+    ```
+
 ## v3.0.0
 * v3.0.0 より THETA Z1 / X における静止画撮影時の天頂補正機能追加により変更がありますので、下記の通り対応をお願いします
   * THETA Z1 / X 共通変更

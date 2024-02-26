@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v4.0.0
+* API 変更
+  * Camera2VideoCapturer、UvcVideoCapturer、ThetaCameraCapturer、ThetaXCameraCapturer に pauseVideo、resumeVideo の API を追加しました
+    * pauseVideo で映像が一時停止し resumeVideo で再開します
+    * 内部的には pauseVideo が呼ばれたら映像フレームを保存し、resumeVideo が呼ばれるまで設定された framerate で保存したフレームを送信し続けます
+  * Camera2VideoCapturer に takePicture()を追加しました。ThetaCameraCapturer と同様に静止画撮影ができます
+  * NetworkErrorに SFU が WebRTC 接続を切断判定した場合のエラー 53004 ConnectionClosedByServer を追加しました
+  * 破壊的変更 (β) ある connection から見て自分が送信している映像を受信している対向 connection の有無をイベントで通知するようになりました
+    * Client.Listener#onUpdateConnectionsStatus()を実装する必要があります
+    * 対向の入室や受信モードなどに応じて有無は変化します
+    * updateconnectionsstatus イベントの video.receiver_existence で判断できるようになります
+  * (β) connect の options の iceServersProtocol に TCP_TLS が指定できるようになりました。TURN の TCP か TLS が自動で選択されるようになります
+* SDK 修正
+  * THETA の機種によって対応していない ShootingMode が指定された際に例外を発生させるように修正しました
+  * ログの ICE (WebRTC の接続試行) 関連の情報を強化しました
+  * P2PRoom への connect 時に対向 connection が退室すると InternalError が発生することがある問題を修正しました
+
 ## v3.1.0
 * API 変更
   * SDK が libwebrtc とは別に独自にネットワークの状況変化に応じて自動でビデオ解像度とフレームレートを変更するモードを変更する Client#changeAdaptiveSendingMode() を追加しました (β)

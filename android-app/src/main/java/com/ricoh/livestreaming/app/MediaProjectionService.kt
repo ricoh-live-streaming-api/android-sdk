@@ -319,6 +319,11 @@ class MediaProjectionService : Service() {
             mClientListener?.onUpdateRemoteTrack(event)
         }
 
+        override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatusEvent) {
+            LOGGER.debug("Client#onUpdateConnectionsStatus receiver_existence = ${event.connectionsStatus.video.receiverExistence}")
+            mClientListener?.onUpdateConnectionsStatus(event)
+        }
+
         override fun onUpdateMute(event: LSUpdateMuteEvent) {
             LOGGER.debug("Client#onUpdateMute({} {}, {}, {})", event.connectionId, event.stream.id, event.mediaStreamTrack.id(), event.mute)
             mClientListener?.onUpdateMute(event)

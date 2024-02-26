@@ -243,6 +243,10 @@ class RecvActivity : AppCompatActivity() {
             }
         }
 
+        override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatusEvent) {
+            LOGGER.debug("Client#onUpdateConnectionsStatus receiver_existence = ${event.connectionsStatus.video.receiverExistence}")
+        }
+
         override fun onUpdateMute(event: LSUpdateMuteEvent) {
             LOGGER.debug("Client#onUpdateMute({} {}, {}, {})", event.connectionId, event.stream.id, event.mediaStreamTrack.id(), event.mute)
         }

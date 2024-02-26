@@ -80,4 +80,6 @@
     <string name="value_readonly">(RO)</string>
     <string name="value_invisible">(Inv)</string>
     <string name="value_auto">(Auto)</string>
+    <string name="pause_video">Pause Video</string>
+    <string name="resume_video">Resume Video</string>
 </resources>
