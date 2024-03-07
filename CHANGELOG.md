@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v4.0.1
+* SDK 修正
+  * 正常終了時に 53004 ConnectionClosedByServer が発生してしまうことがある問題を修正しました
+
 ## v4.0.0
 * API 変更
   * Camera2VideoCapturer、UvcVideoCapturer、ThetaCameraCapturer、ThetaXCameraCapturer に pauseVideo、resumeVideo の API を追加しました
