@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## v4.1.0
+* API 変更
+  * AdaptiveSendingOption の mode に BEST_RESOLUTION と BEST_FRAMERATE を追加しました。それぞれ以下のようなモードになります
+    * BEST_RESOLUTION: 可能な限り 4K 解像度を優先する
+    * BEST_FRAMERATE: 可能な限りフレームレートを優先する
+* SDK 修正
+  * THETA Z1 で takePicture を実行するとライブ映像の ShootingMode と StichingMode が変更されてしまうことがある問題を修正しました
+  * Camera2VideoCapturer の takePicture 呼び出しで内部エラーが起きることがある問題を修正しました
+
 ## v4.0.1
 * SDK 修正
   * 正常終了時に 53004 ConnectionClosedByServer が発生してしまうことがある問題を修正しました
