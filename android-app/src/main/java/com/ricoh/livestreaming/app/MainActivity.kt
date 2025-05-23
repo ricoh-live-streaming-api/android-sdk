@@ -8,6 +8,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,10 +22,14 @@ import com.ricoh.livestreaming.app.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1813480588
-        private val REQUIRED_PERMISSIONS = listOf(
+        private val REQUIRED_PERMISSIONS = mutableListOf(
                 Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO
-        )
+        ).apply {
+            if (Build.VERSION.SDK_INT <= 29) {
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }
     }
     
     /** View Binding */

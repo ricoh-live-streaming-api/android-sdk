@@ -9,8 +9,7 @@ RICOH Live Streaming Serviceは、映像/音声などのメディアデータや
 詳細は下記Webサイトをご確認ください。
 
 * サービスサイト: https://livestreaming.ricoh/
-* ソフトウェア開発者向けサイト: https://api.livestreaming.ricoh/
-* アカウント登録: https://console.livestreaming.mw.smart-integration.ricoh.com/login/register
+* トライアル登録: https://console.livestreaming.mw.smart-integration.ricoh.com/login/register
 * ソフトウェア使用許諾契約書 : [Software License Agreement](SoftwareLicenseAgreement.txt)
 
 * NOTICE: This package includes SDK and sample application(s) for "RICOH Live Streaming Service".
@@ -26,10 +25,10 @@ At this moment, we provide API license agreement / software license agreement on
 
 Client SDK は以下のライブラリを使用しています。
 
-* org.slf4j:slf4j-api:2.0.7
-* com.squareup.okhttp3:okhttp:4.11.0
-* com.google.code.gson:gson:2.10.1
-* com.theta360:pluginlibrary:3.2.0
+* org.slf4j:slf4j-api:2.0.16
+* com.squareup.okhttp3:okhttp:4.12.0
+* com.google.code.gson:gson:2.11.0
+* com.theta360:pluginlibrary:4.0.0
 
 ## バージョンアップ時の更新方法
 

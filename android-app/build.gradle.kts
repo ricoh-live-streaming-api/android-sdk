@@ -11,11 +11,11 @@ plugins {
 
 android {
     namespace = "com.ricoh.livestreaming.app"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.ricoh.livestreaming.app"
         minSdk = 25
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
 
@@ -44,15 +44,15 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "../libs", "include" to listOf("*.aar"))))
-    implementation("org.slf4j:slf4j-api:2.0.7")
+    implementation("org.slf4j:slf4j-api:2.0.16")
     implementation("com.github.tony19:logback-android:3.0.0")
-    implementation("androidx.appcompat:appcompat:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     api("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-orgjson:0.11.2") {
         exclude("org.json", "json")     // provided by Android natively
     }
-    implementation("com.squareup.okhttp3", "okhttp", "4.11.0")
-    implementation("com.google.code.gson", "gson", "2.10.1")
+    implementation("com.squareup.okhttp3", "okhttp", "4.12.0")
+    implementation("com.google.code.gson", "gson", "2.11.0")
 }

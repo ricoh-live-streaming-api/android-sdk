@@ -4,7 +4,7 @@
 * v4.0.0 より `Client#Listener` に新しく `onUpdateConnectionsStatus` イベントが新規追加となりましたので、下記の実装の追加対応をお願いします。
   * 新
     ```kotlin
-    override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatus) {}
+    override fun onUpdateConnectionsStatus(event: LSUpdateConnectionsStatusEvent) {}
     ```
 
 ## v3.0.0

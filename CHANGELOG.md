@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## v4.3.0
+* API 変更
+  * Client.Listener インタフェースのメソッドを全て default メソッドにしました。以後ライブラリ更新時にイベント追加、すなわち default メソッドが追加されても実装の変更は不要になります
+  * (SFURoom のみ) SFU とのメディア接続が確立した際に発行する[イベント](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#イベント)である onMediaOpen を追加しました。[getStats](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#getstats) が実行可能か判断するトリガーや、以降 [53719 ConnectionCreateTimeout](https://livestreaming.ricoh/docs/clientsdk-error-specification/#networkerror) が発生しないことの確認などに使用できます
+  * **破壊的変更予定** onChangestability イベントを onChangeMediaStability イベントに変更しました (onMediaOpen イベントと合わせるため)。現時点では onChangeStability イベントも引き続き使用できますが、今後廃止予定ですので移行をお願いします
+  * Room のクラウド録画状態を通知する [onUpdateRecording イベント](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#イベント)を追加しました
+  * THETA X で以下に対応しました
+    * 5.7K 配信
+    * 適応的送信モード設定 (β 版)
+    * 単眼カメラ配信 (β 版)
+    * 単眼カメラ静止画撮影 (β 版)
+  * onError イベントに切断を伴うエラーかどうかを判定する withDisconnection パラメータを追加しました
+* SDK 修正
+  * シグナリングサーバへの WebSocket リクエスト前に行われる HTTP リクエストが失敗した場合に通知される [NetworkError の追加](https://livestreaming.ricoh/docs/clientsdk-error-specification/#networkerror)を行いました
+    * HTTP リクエストに失敗した場合のエラーコード 54003 PreConnectError
+    * HTTP リクエスト中に Client#disconnect が呼ばれた場合のエラーコード 53005 CanceledByApplication
+  * ハードウェアアクセラレーションが有効かどうかを確認するログ出力を追加しました
+  * ThetaCameraCapturer、ThetaXCameraCapturer、Camera2VideoCapturer に CameraEventsListener を追加しました
+  * THETA X で 4K 15fps 以下の配信時にセンサー駆動モード(Low power mode)で動作するように修正しました
+  * 解像度変更直後すぐの写真撮影、写真撮影直後すぐの写真撮影でクラッシュすることがある問題を修正しました
+  * インフィニテグラ Android USB ライブラリを更新しました
+  * libwebrtc を m126 に更新しました
+* サンプルアプリ修正
+  * compileSdkVersion と targetSdkVersion を 33 から 34 に更新しました
+  * 依存ライブラリバージョンについてメジャーバージョンのアップデートを含む更新を行いました
+
 ## v4.1.0
 * API 変更
   * AdaptiveSendingOption の mode に BEST_RESOLUTION と BEST_FRAMERATE を追加しました。それぞれ以下のようなモードになります

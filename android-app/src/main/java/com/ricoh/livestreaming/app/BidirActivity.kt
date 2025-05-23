@@ -587,7 +587,11 @@ class BidirActivity : AppCompatActivity() {
         }
 
         override fun onOpen(event: LSOpenEvent) {
-            LOGGER.debug("Client#onOpen(accessTokenJson = ${event.accessTokenJson}, receiverExistence = ${event.connectionsStatus.video.receiverExistence})")
+            LOGGER.debug("Client#onOpen(accessTokenJson = ${event.accessTokenJson}, receiverExistence = ${event.connectionsStatus.video.receiverExistence}")
+        }
+
+        override fun onMediaOpen(event: LSMediaOpenEvent) {
+            LOGGER.debug("Client#onMediaOpen")
 
             // == For WebRTC Internal Tracing Capture.
             // == "/sdcard/{LOGS_DIR}/{date}T{time}.log.json" will be created.
@@ -759,8 +763,16 @@ class BidirActivity : AppCompatActivity() {
             LOGGER.debug("Client#onChangeStability({}, {})", event.connectionId, event.stability)
         }
 
+        override fun onUpdateRecording(event: LSUpdateRecordingEvent) {
+            LOGGER.debug("Client#onUpdateRecording({})", event.inRecording)
+        }
+
+        override fun onChangeMediaStability(event: LSChangeMediaStabilityEvent) {
+            LOGGER.debug("Client#onChangeMediaStability({}, {})", event.connectionId, event.stability)
+        }
+
         override fun onError(error: SDKErrorEvent) {
-            LOGGER.error("Client#onError({}:{}:{}:{})", error.detail.type, error.detail.code, error.detail.error, error.toReportString())
+            LOGGER.error("Client#onError({}:{}:{}:{}:{})", error.detail.type, error.detail.code, error.detail.error, error.withDisconnection(), error.toReportString())
         }
     }
 

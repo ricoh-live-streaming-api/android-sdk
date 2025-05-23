@@ -79,8 +79,9 @@ libwebrtc ログは接続する度に "webrtc" プレフィックスのログフ
 
 ファイル形式は [LTSV](http://ltsv.org/) となっている。
 
-すべての情報を出力しているのではなく `candidate-pair`, `outbound-rtp`, `inbound-rtp`, `remote-inbound-rtp`, `track`, `sender`, `media-source`, `local-candidate`, `remote-candidate` の情報だけ出力している。
-
+すべての情報を出力しているのではなく、以下の情報のみ出力している。
+`candidate-pair`, `outbound-rtp`, `codec`, `inbound-rtp`, `remote-inbound-rtp`, `media-source`, `peer-connection`, `local-candidate`, `remote-candidate`
+  
 その他の情報を出力したい場合は `RTCStatsLogger.kt` を修正する。
 出力可能な情報の一覧は https://www.w3.org/TR/webrtc-stats/ で確認できるが、
 libwebrtc の実装に依存するため、記載されているすべての情報が出力できるとは限らない。
