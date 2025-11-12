@@ -4,6 +4,7 @@
 
 package com.ricoh.livestreaming.app
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -12,7 +13,9 @@ import android.content.res.Configuration
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.os.IBinder
+import android.view.View.VISIBLE
 import android.view.WindowManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.ricoh.livestreaming.*
 import com.ricoh.livestreaming.app.databinding.ActivityScreenShareBinding
@@ -24,8 +27,6 @@ class ScreenShareActivity : AppCompatActivity() {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ScreenShareActivity::class.java)
         private const val CAPTURE_PERMISSION_REQUEST_CODE = 1
-        private const val MEDIA_PROJECTION_PERMISSION_RESULT_CODE_KEY = "permission_result_code_key"
-        private const val MEDIA_PROJECTION_PERMISSION_RESULT_DATA_KEY = "permission_result_data_key"
     }
 
     private var mViewLayoutManager: ViewLayoutManager? = null
@@ -33,10 +34,8 @@ class ScreenShareActivity : AppCompatActivity() {
     /** View Binding */
     private lateinit var mActivityScreenShareBinding: ActivityScreenShareBinding
 
-    private var mediaProjectionPermissionResultCode: Int = 0
-    private var mediaProjectionPermissionResultData: Intent? = null
-
     private val clientListener = ClientListener()
+    private var mediaProjectionIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,18 +47,10 @@ class ScreenShareActivity : AppCompatActivity() {
         supportActionBar!!.hide()
 
         mActivityScreenShareBinding.connectButton.setOnClickListener {
-            if (mediaProjectionPermissionResultCode != RESULT_OK) {
-                val message = "User didn't give permission to capture the screen."
-                LOGGER.error(message)
-                throw IllegalStateException(message)
-            }
-
-            if (MediaProjectionServiceBinder.getService()?.getClientState() == Client.State.CLOSED) {
-                mActivityScreenShareBinding.connectButton.text = getString(R.string.connecting)
-                MediaProjectionServiceBinder.getService()?.connect(
-                        mActivityScreenShareBinding.roomId.text.toString(),
-                        mediaProjectionPermissionResultData!!
-                )
+            if (MediaProjectionServiceBinder.getService() == null ||
+                MediaProjectionServiceBinder.getService()!!.getClientState() == Client.State.CLOSED) {
+                val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                screenCaptureStartForResult.launch(mediaProjectionManager.createScreenCaptureIntent())
             } else {
                 mActivityScreenShareBinding.connectButton.text = getString(R.string.disconnecting)
                 MediaProjectionServiceBinder.getService()?.disconnect()
@@ -72,37 +63,28 @@ class ScreenShareActivity : AppCompatActivity() {
             mViewLayoutManager = createViewLayoutManager(it)
         } ?:run {
             // Serviceが起動していない場合はService起動後にViewLayoutManagerを生成する
-            MediaProjectionServiceBinder.bindToService(applicationContext, serviceConnection)
-        }
-
-        savedInstanceState?.let {
-            mediaProjectionPermissionResultCode = it.getInt(MEDIA_PROJECTION_PERMISSION_RESULT_CODE_KEY)
-            mediaProjectionPermissionResultData = it.getParcelable(MEDIA_PROJECTION_PERMISSION_RESULT_DATA_KEY)
-        }
-
-        if (mediaProjectionPermissionResultCode == 0 || mediaProjectionPermissionResultData == null) {
-            // 画面共有のためのパーミッション要求
-            val mediaProjectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-            startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), CAPTURE_PERMISSION_REQUEST_CODE)
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode != CAPTURE_PERMISSION_REQUEST_CODE) {
-            return
+    private val screenCaptureStartForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            LOGGER.info("Screen capture permission request result. code={}, data={}.",
+                result.resultCode, result.data)
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let { intent ->
+                    mActivityScreenShareBinding.connectButton.text = getString(R.string.connecting)
+                    MediaProjectionServiceBinder.getService()?.connect(
+                        mActivityScreenShareBinding.roomId.text.toString(),
+                        intent
+                    ) ?:run {
+                        // Serviceが起動していない場合はService起動後に接続する
+                        mediaProjectionIntent = intent
+                        // Serviceを起動する
+                        MediaProjectionServiceBinder.bindToService(applicationContext, serviceConnection)
+                    }
+                }
+            }
         }
-
-        mediaProjectionPermissionResultCode = resultCode
-        mediaProjectionPermissionResultData = data
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(MEDIA_PROJECTION_PERMISSION_RESULT_CODE_KEY, mediaProjectionPermissionResultCode)
-        outState.putParcelable(MEDIA_PROJECTION_PERMISSION_RESULT_DATA_KEY, mediaProjectionPermissionResultData)
-        super.onSaveInstanceState(outState)
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -317,6 +299,10 @@ class ScreenShareActivity : AppCompatActivity() {
             MediaProjectionServiceBinder.getService()?.let {
                 mViewLayoutManager = createViewLayoutManager(it)
                 it.setClientListener(clientListener)
+                it.connect(
+                    mActivityScreenShareBinding.roomId.text.toString(),
+                    mediaProjectionIntent!!
+                )
             }
         }
 

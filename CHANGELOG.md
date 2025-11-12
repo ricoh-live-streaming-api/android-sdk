@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v4.4.0
+* API 変更
+  * データ送信が安定しているかを取得するメソッド [getQualityControlStatus()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#getqualitycontrolstatus) を追加しました
+  * データ送信の安定状況に変化があったかを通知する [OnChangeQualityControlStatus イベント](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#イベント)を追加しました
+  * [changeAdaptiveSendingMode()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) のメディア制御を最適化しました
+  * [changeAdaptiveSendingMode()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) を β から正式機能に変更しました
+* SDK 修正
+  * Android Native アプリで画面共有のコールバックイベントを受け取れるように修正しました
+  * ウェアラブルグラス（VUZIX M400）で、設定したフレームレートが出ない問題を修正しました
+  * P2P または P2P_TURN のルームで配信すると、audio の hardmute 設定時に Stats の bytesSent が上がる問題を修正しました
+* サンプルアプリ修正
+  * 画面共有アプリ ScreenShareActivity にて、ステータスバーから画面共有停止できるように修正しました
+
 ## v4.3.1
 * SDK 修正
   * 映像転送サーバーと TURN-TLS での接続ができない問題を修正しました

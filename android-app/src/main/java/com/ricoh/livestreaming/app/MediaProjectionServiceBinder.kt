@@ -22,6 +22,7 @@ object MediaProjectionServiceBinder {
     }
 
     fun bindToService(context: Context, callback: ServiceConnection) {
+        LOGGER.info("bindToService()")
         mCallback = callback
         val intent = Intent(context, MediaProjectionService::class.java)
         context.startService(intent)
@@ -29,9 +30,12 @@ object MediaProjectionServiceBinder {
     }
 
     fun unbindFromService(context: Context) {
-        context.unbindService(serviceConnection)
-        context.stopService(Intent(context, MediaProjectionService::class.java))
-        mService = null
+        LOGGER.info("unbindFromService()")
+        if (mService != null) {
+            context.unbindService(serviceConnection)
+            context.stopService(Intent(context, MediaProjectionService::class.java))
+            mService = null
+        }
     }
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {

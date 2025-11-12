@@ -6,7 +6,10 @@ package com.ricoh.livestreaming.app
 
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.media.projection.MediaProjection
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import com.ricoh.livestreaming.*
 import com.ricoh.livestreaming.theta.ThetaVideoEncoderFactory
@@ -84,7 +87,17 @@ class MediaProjectionService : Service() {
         val outputVideoHeight = 1080
 
         mVideoCapturer = ScreenCapturer(
-                applicationContext, mediaProjectionPermissionResultData, outputVideoWidth, outputVideoHeight)
+            applicationContext,
+            mediaProjectionPermissionResultData,
+            outputVideoWidth,
+            outputVideoHeight,
+            object : MediaProjection.Callback() {
+                override fun onStop() {
+                    LOGGER.debug("MediaProjection stopped")
+                    disconnect()
+                }
+            }
+        )
 
         val roomSpec = RoomSpec(Config.getRoomType())
         val accessToken = JwtAccessToken.createAccessToken(BuildConfig.CLIENT_SECRET, roomId, roomSpec)
@@ -186,7 +199,11 @@ class MediaProjectionService : Service() {
         val notification = notificationHelper.getNotification(
                 getString(R.string.app_name),
                 getString(R.string.running))
-        startForeground(NOTIFICATION_ID, notification)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
     }
 
     private fun clearNotification() {
