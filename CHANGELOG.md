@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v4.6.0
+* API 変更
+  * [changeAdaptiveSendingMode()](/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) のメディア制御を最適化しました
+* SDK 修正
+  * 映像コーデックに H.265 を追加しました（THETA X/Z1 は設定不可）
+  * 撮影した静止画の Exif に GPS 情報が付与できるようにしました
+  * 適応的送信モードでメディア制御を自動にして配信していると、まれに映像配信が出来なくなる問題を修正しました
+  * Android Native アプリで 16 KB ページサイズの警告が出ないように修正しました
+  * Android Native アプリで設定したフレームレートが出ない問題を修正しました
+  * libwebrtc を m139 に更新しました
+  * インフィニテグラ Android USB ライブラリを更新しました
+  * 依存ライブラリのバージョンを更新しました
+* 共通修正
+  * Gradle を 8.5.1 に更新しました
+
 ## v4.4.0
 * API 変更
   * データ送信が安定しているかを取得するメソッド [getQualityControlStatus()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#getqualitycontrolstatus) を追加しました
