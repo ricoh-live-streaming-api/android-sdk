@@ -2,7 +2,7 @@
 
 ## v4.6.0
 * API 変更
-  * [changeAdaptiveSendingMode()](/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) のメディア制御を最適化しました
+  * [changeAdaptiveSendingMode()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) のメディア制御を最適化しました
 * SDK 修正
   * 映像コーデックに H.265 を追加しました（THETA X/Z1 は設定不可）
   * 撮影した静止画の Exif に GPS 情報が付与できるようにしました
