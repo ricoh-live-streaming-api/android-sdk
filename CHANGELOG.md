@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v4.7.0
+* API 変更
+  * [changeAdaptiveSendingMode()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) のメディア制御を最適化しました
+  * Camera2VideoCapturer にズーム制御を行う setCameraZoomRatio() を追加しました
+  * Camera2VideoCapturer にマニュアルフォーカス制御を行う requestFocus() を追加しました
+  * Camera2VideoCapturer にオートフォーカス制御を行う requestAutoFocus() を追加しました
+* SDK 修正
+  * Google Pixel 10 Pro で解像度設定変更後に意図したビットレートが出ない問題を修正しました
+  * P2P/TURN 接続時に証明書エラーが発生する問題を修正しました
+
 ## v4.6.0
 * API 変更
   * [changeAdaptiveSendingMode()](https://livestreaming.ricoh/docs/clientsdk-api-external-specification/#changeadaptivesendingmode) のメディア制御を最適化しました
